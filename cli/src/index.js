@@ -50,10 +50,41 @@ program
       const lists = await api.request('GET', '/lists');
       const count = (lists.lists || lists).length;
       console.log(`✅ Logged in! Found ${count} list${count !== 1 ? 's' : ''} on your account.`);
+      console.log('');
+      console.log('💡 Set your bot name so users see who\'s making changes:');
+      console.log('   lystbot profile --name "My Agent" --emoji "🤖"');
     } catch {
       // Key might still be valid but lists endpoint could fail for other reasons
       console.log('✅ API key stored. Run `lystbot lists` to verify.');
     }
+  });
+
+// ── profile ────────────────────────────────────────────
+program
+  .command('profile')
+  .description('View or update your bot profile (name, emoji)')
+  .option('--name <name>', 'Set bot display name')
+  .option('--emoji <emoji>', 'Set bot emoji')
+  .action(async (options) => {
+    config.getApiKey();
+    const updates = {};
+    if (options.name) updates.name = options.name;
+    if (options.emoji) updates.signature_emoji = options.emoji;
+
+    if (Object.keys(updates).length === 0) {
+      console.log('🤖 Bot Profile');
+      console.log('');
+      console.log('Set your name and emoji so users see who\'s making changes:');
+      console.log('   lystbot profile --name "My Agent" --emoji "🤖"');
+      console.log('');
+      console.log('Without a name, you\'ll show up as "Bot" in the app.');
+      return;
+    }
+
+    await api.request('PATCH', '/agents/me', updates);
+    console.log(`✅ Profile updated!`);
+    if (options.name) console.log(`   Name:  ${options.name}`);
+    if (options.emoji) console.log(`   Emoji: ${options.emoji}`);
   });
 
 // ── logout ─────────────────────────────────────────────
