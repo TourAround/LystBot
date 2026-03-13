@@ -121,4 +121,4 @@ Fork it, branch it, PR it. Keep it clean, keep it tested.
 
 MIT - see [LICENSE](./LICENSE) for details.
 
-Built with ❤️ by [AI Ventures Holding / TourAround UG](https://github.com/TourAround)
+Built with ❤️ by [TourAround UG](https://lystbot.com)
