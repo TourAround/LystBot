@@ -1,6 +1,6 @@
 # 📡 LystBot API Reference
 
-> Base URL: `https://daffy.touraround.io/lystbot/api/v1`
+> Base URL: `https://lystbot.com/api/v1`
 
 All requests and responses use `Content-Type: application/json`.
 
@@ -41,7 +41,7 @@ GET /api/v1/health
 No authentication required.
 
 ```bash
-curl https://daffy.touraround.io/lystbot/api/v1/health
+curl https://lystbot.com/api/v1/health
 ```
 
 ```json
@@ -61,7 +61,7 @@ POST /api/v1/devices/register
 No authentication required. Registers a new device and returns a UUID.
 
 ```bash
-curl -X POST https://daffy.touraround.io/lystbot/api/v1/devices/register \
+curl -X POST https://lystbot.com/api/v1/devices/register \
   -H "Content-Type: application/json" \
   -d '{"name": "My Agent", "platform": "cli"}'
 ```
@@ -86,7 +86,7 @@ PATCH /api/v1/devices/{uuid}
 Auth: `X-Device-UUID`
 
 ```bash
-curl -X PATCH https://daffy.touraround.io/lystbot/api/v1/devices/YOUR_UUID \
+curl -X PATCH https://lystbot.com/api/v1/devices/YOUR_UUID \
   -H "X-Device-UUID: YOUR_UUID" \
   -H "Content-Type: application/json" \
   -d '{"name": "Updated Name", "pushToken": "fcm-token-here"}'
@@ -105,7 +105,7 @@ Auth: `X-Device-UUID`
 Retrieves a Bearer token for agent/CLI authentication.
 
 ```bash
-curl https://daffy.touraround.io/lystbot/api/v1/devices/YOUR_UUID/api-key \
+curl https://lystbot.com/api/v1/devices/YOUR_UUID/api-key \
   -H "X-Device-UUID: YOUR_UUID"
 ```
 
@@ -128,7 +128,7 @@ GET /api/v1/lists
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl https://daffy.touraround.io/lystbot/api/v1/lists \
+curl https://lystbot.com/api/v1/lists \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -156,7 +156,7 @@ POST /api/v1/lists
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X POST https://daffy.touraround.io/lystbot/api/v1/lists \
+curl -X POST https://lystbot.com/api/v1/lists \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"name": "Groceries", "emoji": "🛒"}'
@@ -184,7 +184,7 @@ GET /api/v1/lists/{id}
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl https://daffy.touraround.io/lystbot/api/v1/lists/1 \
+curl https://lystbot.com/api/v1/lists/1 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -226,7 +226,7 @@ PUT /api/v1/lists/{id}
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X PUT https://daffy.touraround.io/lystbot/api/v1/lists/1 \
+curl -X PUT https://lystbot.com/api/v1/lists/1 \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"name": "Weekly Groceries", "emoji": "🛒"}'
@@ -241,7 +241,7 @@ DELETE /api/v1/lists/{id}
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X DELETE https://daffy.touraround.io/lystbot/api/v1/lists/1 \
+curl -X DELETE https://lystbot.com/api/v1/lists/1 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -260,7 +260,7 @@ POST /api/v1/lists/{id}/items
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X POST https://daffy.touraround.io/lystbot/api/v1/lists/1/items \
+curl -X POST https://lystbot.com/api/v1/lists/1/items \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"text": "Coffee beans"}'
@@ -285,7 +285,7 @@ PUT /api/v1/lists/{id}/items/{itemId}
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X PUT https://daffy.touraround.io/lystbot/api/v1/lists/1/items/3 \
+curl -X PUT https://lystbot.com/api/v1/lists/1/items/3 \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"text": "Coffee beans (whole)", "checked": true}'
@@ -300,7 +300,7 @@ DELETE /api/v1/lists/{id}/items/{itemId}
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X DELETE https://daffy.touraround.io/lystbot/api/v1/lists/1/items/3 \
+curl -X DELETE https://lystbot.com/api/v1/lists/1/items/3 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -321,7 +321,7 @@ Auth: `X-Device-UUID` or `Bearer Token`
 Generates a share code that others can use to join the list.
 
 ```bash
-curl -X POST https://daffy.touraround.io/lystbot/api/v1/lists/1/share \
+curl -X POST https://lystbot.com/api/v1/lists/1/share \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -342,7 +342,7 @@ POST /api/v1/lists/join
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X POST https://daffy.touraround.io/lystbot/api/v1/lists/join \
+curl -X POST https://lystbot.com/api/v1/lists/join \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"shareCode": "ABC123"}'
@@ -367,7 +367,7 @@ POST /api/v1/lists/{id}/leave
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X POST https://daffy.touraround.io/lystbot/api/v1/lists/1/leave \
+curl -X POST https://lystbot.com/api/v1/lists/1/leave \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -388,7 +388,7 @@ GET /api/v1/favorites
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl https://daffy.touraround.io/lystbot/api/v1/favorites \
+curl https://lystbot.com/api/v1/favorites \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -413,7 +413,7 @@ POST /api/v1/favorites
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X POST https://daffy.touraround.io/lystbot/api/v1/favorites \
+curl -X POST https://lystbot.com/api/v1/favorites \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"text": "Milk", "emoji": "🥛"}'
@@ -428,7 +428,7 @@ PUT /api/v1/favorites/{id}
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X PUT https://daffy.touraround.io/lystbot/api/v1/favorites/1 \
+curl -X PUT https://lystbot.com/api/v1/favorites/1 \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"text": "Oat Milk", "emoji": "🥛"}'
@@ -443,7 +443,7 @@ DELETE /api/v1/favorites/{id}
 Auth: `X-Device-UUID` or `Bearer Token`
 
 ```bash
-curl -X DELETE https://daffy.touraround.io/lystbot/api/v1/favorites/1 \
+curl -X DELETE https://lystbot.com/api/v1/favorites/1 \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -460,7 +460,7 @@ Auth: `X-Device-UUID` or `Bearer Token`
 Adds the favorite item to a specified list.
 
 ```bash
-curl -X POST https://daffy.touraround.io/lystbot/api/v1/favorites/1/use \
+curl -X POST https://lystbot.com/api/v1/favorites/1/use \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"listId": 1}'
@@ -479,7 +479,7 @@ PATCH /api/v1/agents/me
 Auth: `Bearer Token` only
 
 ```bash
-curl -X PATCH https://daffy.touraround.io/lystbot/api/v1/agents/me \
+curl -X PATCH https://lystbot.com/api/v1/agents/me \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"name": "TARS", "description": "Personal AI assistant"}'

@@ -157,7 +157,7 @@ Config is stored in `~/.lystbot/config.json`:
 ```json
 {
   "apiKey": "lystbot_ak_xxxxxxxxxxxxxxxxxxxx",
-  "apiUrl": "https://daffy.touraround.io/lystbot/api/v1"
+  "apiUrl": "https://lystbot.com/api/v1"
 }
 ```
 

@@ -6,8 +6,8 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
-  <a href="https://www.npmjs.com/package/@lystbot/cli"><img src="https://img.shields.io/npm/v/@lystbot/cli.svg" alt="npm" /></a>
-  <a href="https://daffy.touraround.io/lystbot/api/v1/health"><img src="https://img.shields.io/badge/API-online-brightgreen.svg" alt="API Status" /></a>
+  <a href="https://www.npmjs.com/package/lystbot"><img src="https://img.shields.io/npm/v/lystbot.svg" alt="npm" /></a>
+  <a href="https://lystbot.com/api/v1/health"><img src="https://img.shields.io/badge/API-online-brightgreen.svg" alt="API Status" /></a>
 </p>
 
 <p align="center">
@@ -29,7 +29,8 @@
 ## ⚡ Quick Start
 
 ```bash
-npm install -g @lystbot/cli
+npx lystbot login
+# or: npm install -g lystbot
 lystbot login
 lystbot add "Groceries" "Oat milk, Bananas, Coffee"
 ```
