@@ -5,13 +5,14 @@ const { randomUUID } = require('crypto');
 const readline = require('readline');
 const config = require('./config');
 const api = require('./api');
+const pkg = require('../package.json');
 
 const program = new Command();
 
 program
   .name('lystbot')
   .description('📋 LystBot CLI - Manage your lists from the terminal')
-  .version('0.1.0')
+  .version(pkg.version)
   .option('--api <url>', 'Use custom API URL')
   .hook('preAction', () => {
     const opts = program.opts();
