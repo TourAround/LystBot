@@ -74,30 +74,75 @@ No new AI to learn. No prompts inside the app. Just connect your existing AI and
 
 ---
 
+## 🔌 MCP Server
+
+LystBot includes a built-in MCP (Model Context Protocol) server. Works with **Claude Desktop**, **Cursor**, **Windsurf**, **Cline**, and any MCP-compatible client.
+
+### Setup
+
+1. Install the LystBot app ([iOS](https://apps.apple.com/app/lystbot) / Android)
+2. Copy your API key from Settings → AI Agents
+3. Authenticate the CLI:
+   ```bash
+   npx lystbot login <YOUR_API_KEY>
+   ```
+4. Add this to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+   ```json
+   {
+     "mcpServers": {
+       "lystbot": {
+         "command": "npx",
+         "args": ["lystbot", "mcp"]
+       }
+     }
+   }
+   ```
+5. Restart Claude Desktop. Done.
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `list_lists` | Get all your lists |
+| `get_list` | Get a specific list with items |
+| `create_list` | Create a new list |
+| `delete_list` | Delete a list |
+| `add_items` | Add one or more items to a list |
+| `check_item` | Check off an item |
+| `uncheck_item` | Uncheck an item |
+| `remove_item` | Remove an item from a list |
+| `share_list` | Generate a share code for a list |
+| `join_list` | Join a shared list via code |
+
+> Works the same way in Cursor, Windsurf, and Cline. Just add the config to your editor's MCP settings.
+
+---
+
 ## 📚 Documentation
 
 - 📡 **[API Reference](./docs/api/)** - Full endpoint docs with curl examples
 - 💻 **[CLI Reference](./docs/cli/)** - Command-line interface docs
+- 🔌 **MCP Server** - Run `npx lystbot mcp` (see setup above)
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  Your Phone  │     │  Your AI    │     │   CLI       │
-│  (LystBot)   │     │ (ChatGPT,   │     │  (npx       │
-│              │     │  Claude...) │     │   lystbot)  │
-└──────┬───────┘     └──────┬──────┘     └──────┬──────┘
-       │                    │                    │
-       │  X-Device-UUID     │  Bearer Token      │  Bearer Token
-       │                    │                    │
-       └────────────────────┼────────────────────┘
-                            │
-                    ┌───────▼───────┐
-                    │   LystBot API  │
-                    │   (REST/JSON)  │
-                    └───────────────┘
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  Your Phone  │     │  Your AI    │     │  MCP Client  │     │   CLI       │
+│  (LystBot)   │     │ (ChatGPT,   │     │ (Claude,     │     │  (npx       │
+│              │     │  any agent) │     │  Cursor...)  │     │   lystbot)  │
+└──────┬───────┘     └──────┬──────┘     └──────┬───────┘     └──────┬──────┘
+       │                    │                    │                    │
+       │  X-Device-UUID     │  Bearer Token      │  MCP Protocol     │  Bearer Token
+       │                    │                    │                    │
+       └────────────────────┼────────────────────┼────────────────────┘
+                            │                    │
+                    ┌───────▼────────────────────▼┐
+                    │        LystBot API           │
+                    │     (REST/JSON + MCP)         │
+                    └──────────────────────────────┘
 ```
 
 ---
