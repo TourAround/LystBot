@@ -24,56 +24,36 @@ program
 // ── login ──────────────────────────────────────────────
 program
   .command('login')
-  .description('Authenticate with LystBot')
-  .option('--token <api-key>', 'Set API key directly')
-  .action(async (options) => {
-    if (options.token) {
-      config.write({ apiKey: options.token, apiUrl: config.getBaseUrl() });
-      console.log('✅ Logged in! API key stored.');
-      return;
-    }
-
-    // Interactive registration
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-    const ask = (q) => new Promise(resolve => rl.question(q, resolve));
-
-    console.log('🔐 LystBot Device Registration\n');
-    const name = await ask('Device name (e.g. "My Laptop"): ');
-    rl.close();
-
-    if (!name.trim()) {
-      console.error('❌ Name cannot be empty.');
-      process.exit(1);
-    }
-
-    console.log('\n⏳ Registering device...');
-    const uuid = randomUUID();
-    const device = await api.rawRequest('POST', '/devices/register', {
-      uuid,
-      name: name.trim(),
-      platform: 'cli',
-    });
-
-    console.log(`📱 Device registered: ${device.uuid}`);
-
-    // API key may come directly in register response or via separate endpoint
-    let apiKey = device.api_key || device.apiKey;
+  .description('Authenticate with your LystBot API key (from the app)')
+  .argument('[api-key]', 'Your API key from the LystBot app')
+  .action(async (apiKey) => {
     if (!apiKey) {
-      console.log('⏳ Fetching API key...');
-      const keyData = await api.rawRequest('GET', `/devices/${device.uuid}/api-key`, null, {
-        'X-Device-UUID': device.uuid,
-      });
-      apiKey = keyData.api_key || keyData.apiKey;
+      // Interactive: ask for the key
+      const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+      const ask = (q) => new Promise(resolve => rl.question(q, resolve));
+
+      console.log('🔑 LystBot CLI Login\n');
+      console.log('Open the LystBot app → Settings → AI Agents → copy your API key.\n');
+      apiKey = await ask('API Key: ');
+      rl.close();
+
+      if (!apiKey.trim()) {
+        console.error('❌ API key cannot be empty.');
+        process.exit(1);
+      }
+      apiKey = apiKey.trim();
     }
 
-    config.write({
-      apiKey,
-      deviceUuid: device.uuid,
-      deviceName: name.trim(),
-      apiUrl: config.getBaseUrl(),
-    });
-
-    console.log('✅ Logged in! You\'re all set 🎉');
+    // Verify the key works
+    config.write({ apiKey, apiUrl: config.getBaseUrl() });
+    try {
+      const lists = await api.request('GET', '/lists');
+      const count = (lists.lists || lists).length;
+      console.log(`✅ Logged in! Found ${count} list${count !== 1 ? 's' : ''} on your account.`);
+    } catch {
+      // Key might still be valid but lists endpoint could fail for other reasons
+      console.log('✅ API key stored. Run `lystbot lists` to verify.');
+    }
   });
 
 // ── logout ─────────────────────────────────────────────

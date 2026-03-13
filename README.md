@@ -29,13 +29,11 @@
 ## ⚡ Quick Start
 
 ```bash
-npx lystbot login
-# or: npm install -g lystbot
-lystbot login
+npx lystbot login YOUR_API_KEY
 lystbot add "Groceries" "Oat milk, Bananas, Coffee"
 ```
 
-That's it. Your list exists, syncs to your phone, and any AI agent with your API key can read and update it.
+Get your API key from the LystBot app (Settings → AI Agents). That's it. Your AI agent can now manage your lists, and changes sync to your phone instantly.
 
 ---
 
