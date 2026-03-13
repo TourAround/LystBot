@@ -14,8 +14,12 @@ program
   .description('📋 LystBot CLI - Manage your lists from the terminal')
   .version(pkg.version)
   .option('--api <url>', 'Use custom API URL')
+  .option('--config <path>', 'Use custom config file (for multi-agent setups)')
   .hook('preAction', () => {
     const opts = program.opts();
+    if (opts.config) {
+      config.setConfigPath(opts.config);
+    }
     if (opts.api) {
       config.setCustomUrl(opts.api);
       console.log(`🔗 API: ${opts.api}\n`);
