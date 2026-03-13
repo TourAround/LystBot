@@ -11,7 +11,9 @@
 </p>
 
 <p align="center">
-  <strong>LystBot</strong> is a list app built for the AI era. Not just another todo app with an AI button slapped on - it's designed from day one so that <em>any</em> AI agent can manage your lists for you.
+  <strong>LystBot is not another AI list app.</strong> There's no built-in AI. No chatbot. No "AI-powered suggestions."<br />
+  Instead, LystBot gives <em>your</em> AI - ChatGPT, Claude, OpenClaw, or any agent you already use - a direct line to your lists.<br />
+  <strong>Your AI controls this app. The app is the window to the real world.</strong>
 </p>
 
 ---
@@ -27,20 +29,24 @@ Get your API key from the LystBot app (Settings → AI Agents). That's it. Your 
 
 ---
 
-## 🧠 Built for AI Agents
+## 🧠 How It Works
 
-Most list apps treat AI as a feature. LystBot treats AI as a **first-class user**.
+Most "AI list apps" shove a chatbot inside the app. LystBot does the opposite: **your AI lives where it already lives** (ChatGPT, Claude, your own agent), and LystBot is the app it controls.
 
-Every list, every item, every action is available through a clean REST API. No scraping, no workarounds, no browser automation. Just `Authorization: Bearer <your-key>` and you're in.
+```
+You → talk to your AI → AI calls LystBot API → your phone updates instantly
+```
+
+No new AI to learn. No prompts inside the app. Just connect your existing AI and it can manage your groceries, packing lists, todos - anything.
 
 **Why this matters:**
 
-- 🤖 **Your AI assistant can manage your groceries** - "Add eggs to my shopping list" actually works, from any AI
-- 🔑 **Dual auth system** - Device UUIDs for the app, Bearer tokens for agents. Clean separation.
-- 📡 **Real-time sync** - Changes from your AI show up on your phone instantly
-- 💻 **CLI + REST API** - Automate anything, from any language
+- 🤖 **"Add eggs to my shopping list" actually works** - from ChatGPT, Claude, or any AI you use
+- 📱 **Your phone is the display** - your AI writes, you see it instantly on your phone
+- 🔑 **Clean separation** - the app is for humans, the API is for agents
+- 🔄 **Real-time sync** - your AI adds milk, your partner sees it immediately
 
-> *"The best list app is the one you never have to open."*
+> *"The best list app is the one your AI opens for you."*
 
 ---
 
@@ -54,9 +60,9 @@ Every list, every item, every action is available through a clean REST API. No s
 
 ⭐ **Favorites** - Quick-access items you use all the time (reusable templates)
 
-🔔 **Push Notifications** - Get notified when shared lists change
+🔔 **Push Notifications** - Get notified when your AI or your family changes a list
 
-🌐 **Open API** - Full REST API, documented and ready for automation
+🌐 **Open API** - Full REST API so any AI agent can read, write, and manage your lists
 
 <p align="center">
   <img src="./assets/app-screenshot-dashboard.png" alt="Dashboard" width="220" />
@@ -79,8 +85,9 @@ Every list, every item, every action is available through a clean REST API. No s
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  Mobile App  │     │     CLI     │     │  AI Agents  │
-│  (Flutter)   │     │   (Node)    │     │  (REST API) │
+│  Your Phone  │     │  Your AI    │     │   CLI       │
+│  (LystBot)   │     │ (ChatGPT,   │     │  (npx       │
+│              │     │  Claude...) │     │   lystbot)  │
 └──────┬───────┘     └──────┬──────┘     └──────┬──────┘
        │                    │                    │
        │  X-Device-UUID     │  Bearer Token      │  Bearer Token
@@ -101,7 +108,7 @@ Every list, every item, every action is available through a clean REST API. No s
 
 **As a developer:** Check the [API docs](./docs/api/) and grab your Bearer token
 
-**As an AI agent:** Hit the REST API directly with your Bearer token
+**As an AI agent:** `Authorization: Bearer <your-key>` and you're in
 
 ---
 
