@@ -391,4 +391,13 @@ program
     console.log(`🤝 Joined: ${list.emoji || '📋'} ${list.title || list.name} (${list.item_count || 0} items)`);
   });
 
+// ── mcp ────────────────────────────────────────────────
+program
+  .command('mcp')
+  .description('Start MCP (Model Context Protocol) server for Claude Desktop, Cursor, etc.')
+  .action(async () => {
+    const { startMcpServer } = require('./mcp');
+    await startMcpServer();
+  });
+
 program.parse();
