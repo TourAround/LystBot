@@ -201,9 +201,18 @@ program
   .action(async (listQuery, rawItems) => {
     config.getApiKey();
 
-    // Smart parsing: split on commas, trim, flatten
+    // Smart parsing: each CLI argument is one item.
+    // Within a single argument, split on ", " (comma+space) for batch input.
+    // To include a literal comma+space in an item, use semicolons as separator instead.
+    // e.g. "Milch; Eier; Brot" or "Käse, Wurst, Senf" both work as batch.
+    // Single item with comma: pass as separate arg without comma+space pattern.
     const items = rawItems
-      .flatMap(i => i.split(','))
+      .flatMap(i => {
+        // If argument contains semicolons, use those as separators (commas stay literal)
+        if (i.includes(';')) return i.split(';');
+        // Otherwise split on ", " (comma followed by space)
+        return i.split(', ');
+      })
       .map(i => i.trim())
       .filter(Boolean);
 

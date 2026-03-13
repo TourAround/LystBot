@@ -1,6 +1,6 @@
 {
   "name": "lystbot",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "LystBot CLI - Manage your lists from the terminal",
   "main": "src/index.js",
   "bin": {
