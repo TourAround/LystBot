@@ -323,6 +323,38 @@ program
     console.log(`🗑️  Removed: ${item.text}`);
   });
 
+// ── clear ──────────────────────────────────────────────
+program
+  .command('clear <list>')
+  .description('Remove all checked (completed) items from a list')
+  .option('--force', 'Skip confirmation')
+  .action(async (listQuery, options) => {
+    config.getApiKey();
+    const { list, detail } = await api.resolveList(listQuery, { withItems: true });
+    const checked = (detail.items || []).filter(i => i.checked);
+
+    if (checked.length === 0) {
+      console.log(`✨ No checked items in ${list.emoji || '📋'} ${list.title || list.name}`);
+      return;
+    }
+
+    if (!options.force) {
+      const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+      const answer = await new Promise(resolve =>
+        rl.question(`🧹 Remove ${checked.length} checked item(s) from '${list.emoji || ''} ${list.title || list.name}'? (y/N) `, resolve)
+      );
+      rl.close();
+
+      if (answer.toLowerCase() !== 'y') {
+        console.log('Cancelled.');
+        process.exit(0);
+      }
+    }
+
+    const result = await api.request('DELETE', `/lists/${list.id}/items/checked`);
+    console.log(`🧹 Cleared ${result.deleted_count} checked item(s) from ${list.emoji || '📋'} ${list.title || list.name}`);
+  });
+
 // ── create ─────────────────────────────────────────────
 program
   .command('create <name>')
@@ -377,8 +409,8 @@ program
 
     const result = await api.request('POST', `/lists/${list.id}/share`);
     console.log(`\n🔗 Share code for ${list.emoji || '📋'} ${list.title || list.name}:\n`);
-    console.log(`   ${result.shareCode}\n`);
-    console.log(`   Others can join with: lystbot join ${result.shareCode}`);
+    console.log(`   ${result.share_code}\n`);
+    console.log(`   Others can join with: lystbot join ${result.share_code}`);
   });
 
 // ── join ───────────────────────────────────────────────
@@ -387,7 +419,7 @@ program
   .description('Join a shared list using a share code')
   .action(async (code) => {
     config.getApiKey();
-    const list = await api.request('POST', '/lists/join', { shareCode: code });
+    const list = await api.request('POST', '/lists/join', { code });
     console.log(`🤝 Joined: ${list.emoji || '📋'} ${list.title || list.name} (${list.item_count || 0} items)`);
   });
 

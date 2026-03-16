@@ -203,6 +203,17 @@ async function startMcpServer() {
     return { content: [{ type: 'text', text: `🗑️ Removed: ${found.text}` }] };
   });
 
+  server.tool('clear_checked', 'Remove all checked (completed) items from a list', {
+    list: { type: 'string', description: 'List name or ID' },
+  }, async ({ list: query }) => {
+    const all = await api('GET', '/lists');
+    const match = findList(all.lists || all, query);
+    if (!match) throw new Error(`List "${query}" not found`);
+
+    const data = await api('DELETE', `/lists/${match.id}/items/checked`);
+    return { content: [{ type: 'text', text: `🧹 Cleared ${data.deleted_count} checked item(s) from ${match.emoji || '📋'} ${match.title}` }] };
+  });
+
   server.tool('share_list', 'Generate a share code for a list', {
     list: { type: 'string', description: 'List name or ID' },
   }, async ({ list: query }) => {
