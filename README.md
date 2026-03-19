@@ -149,11 +149,39 @@ LystBot includes a built-in MCP (Model Context Protocol) server. Works with **Cl
 
 ## 🚀 Getting Started
 
-**As a user:** Download LystBot on [iOS](https://apps.apple.com/app/lystbot) or [Android](https://play.google.com/store/apps/details?id=io.touraround.lystbot) (coming soon)
+### 1. Download the App
 
-**As a developer:** Check the [API docs](./docs/api/) and grab your Bearer token
+<p align="center">
+  <a href="https://apps.apple.com/app/lystbot/id6742044832"><img src="https://img.shields.io/badge/App_Store-Download-blue?logo=apple&logoColor=white&style=for-the-badge" alt="App Store" /></a>
+  &nbsp;&nbsp;
+  <a href="https://play.google.com/store/apps/details?id=io.touraround.lystbot"><img src="https://img.shields.io/badge/Google_Play-Download-green?logo=googleplay&logoColor=white&style=for-the-badge" alt="Google Play" /></a>
+</p>
 
-**As an AI agent:** `Authorization: Bearer <your-key>` and you're in
+Create your account, set up your first list, and you're ready.
+
+### 2. Connect Your AI Agent
+
+Point your AI to the agent setup page - it has everything your agent needs to get started:
+
+👉 **[lystbot.com/agents](https://lystbot.com/agents)**
+
+Pick the integration that fits your setup:
+
+| Method | Best for | Setup time |
+|--------|----------|------------|
+| **MCP Server** | Claude Desktop, Cursor, Windsurf, Cline | 2 min |
+| **CLI** | Terminal power users, scripts, automation | 1 min |
+| **REST API** | ChatGPT Actions, custom agents, Home Assistant | 5 min |
+
+### 3. Done
+
+```bash
+# Example: your agent adds items via CLI
+npx lystbot login YOUR_API_KEY
+lystbot add "Groceries" "Oat milk, Bananas, Coffee"
+```
+
+Your agent writes to the list. Your phone updates instantly. That's the whole idea.
 
 ---
 
