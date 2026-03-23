@@ -116,8 +116,8 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 
 | Agent | Provider | Integration |
 |-------|----------|-------------|
-| Claude Desktop | Anthropic | MCP Server (`npx lystbot mcp`) |
-| Claude Code | Anthropic | CLI or MCP Server |
+| Claude Desktop | Anthropic | MCP Server ([setup below](#claude-desktop)) |
+| Claude Code | Anthropic | MCP Server ([setup below](#claude-code)) |
 | Cursor | Anysphere | MCP Server |
 | Windsurf | Codeium | MCP Server |
 | GitHub Copilot | Microsoft | MCP Server or Copilot Extension |
@@ -178,27 +178,58 @@ lystbot profile --name "TARS" --emoji "🤖" # Set your bot's display name
 
 ## 🔌 MCP Server
 
-LystBot ships with a built-in [MCP](https://modelcontextprotocol.io) server. Works with **Claude Desktop**, **Cursor**, **Windsurf**, **Cline**, and any MCP-compatible client.
+LystBot ships with a built-in [MCP](https://modelcontextprotocol.io) server. Works with **Claude Desktop**, **Claude Code**, **Cursor**, **Windsurf**, **Cline**, and any MCP-compatible client.
 
-### Setup
+**First, authenticate** (all setups need this):
 
-1. Get your API key from the LystBot app (Settings → AI Agents)
-2. Authenticate:
-   ```bash
-   npx lystbot login <YOUR_API_KEY>
-   ```
-3. Add to your MCP client config (e.g. `~/Library/Application Support/Claude/claude_desktop_config.json`):
-   ```json
-   {
-     "mcpServers": {
-       "lystbot": {
-         "command": "npx",
-         "args": ["lystbot", "mcp"]
-       }
-     }
-   }
-   ```
-4. Restart your client. Done.
+```bash
+npx lystbot login <YOUR_API_KEY>
+```
+
+### Claude Desktop
+
+Add this to your config file:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "lystbot": {
+      "command": "npx",
+      "args": ["lystbot", "mcp"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop. Done.
+
+### Claude Code
+
+One command:
+
+```bash
+claude mcp add lystbot -- npx lystbot mcp
+```
+
+That's it. Claude Code can now manage your lists.
+
+### Cursor / Windsurf / Cline
+
+Add the same config to your editor's MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "lystbot": {
+      "command": "npx",
+      "args": ["lystbot", "mcp"]
+    }
+  }
+}
+```
 
 ### Available Tools
 
