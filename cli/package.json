@@ -1,6 +1,7 @@
 {
   "name": "lystbot",
-  "version": "0.3.2",
+  "version": "0.3.6",
+  "mcpName": "io.github.TourAround/lystbot",
   "description": "LystBot CLI - Manage your lists from the terminal",
   "main": "src/index.js",
   "bin": {

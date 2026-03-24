@@ -1,5 +1,6 @@
 const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
 const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
+const { z } = require('zod');
 const config = require('./config');
 
 // --- API helper (non-exiting version for MCP) ---
@@ -70,7 +71,7 @@ async function startMcpServer() {
   });
 
   server.tool('get_list', 'Get a list with all its items', {
-    list: { type: 'string', description: 'List name or ID' },
+    list: z.string().describe('List name or ID'),
   }, async ({ list: query }) => {
     const all = await api('GET', '/lists');
     const match = findList(all.lists || all, query);
@@ -97,9 +98,9 @@ async function startMcpServer() {
   });
 
   server.tool('create_list', 'Create a new list', {
-    title: { type: 'string', description: 'List title' },
-    type: { type: 'string', description: 'List type: shopping, todo, packing, or generic (default: generic)' },
-    emoji: { type: 'string', description: 'List emoji (optional, auto-picked if omitted)' },
+    title: z.string().describe('List title'),
+    type: z.string().optional().describe('List type: shopping, todo, packing, or generic (default: generic)'),
+    emoji: z.string().optional().describe('List emoji (optional, auto-picked if omitted)'),
   }, async ({ title, type, emoji }) => {
     const id = uuid();
     if (!emoji) {
@@ -116,7 +117,7 @@ async function startMcpServer() {
   });
 
   server.tool('delete_list', 'Delete a list', {
-    list: { type: 'string', description: 'List name or ID' },
+    list: z.string().describe('List name or ID'),
   }, async ({ list: query }) => {
     const all = await api('GET', '/lists');
     const match = findList(all.lists || all, query);
@@ -126,14 +127,13 @@ async function startMcpServer() {
   });
 
   server.tool('add_items', 'Add one or more items to a list', {
-    list: { type: 'string', description: 'List name or ID' },
-    items: { type: 'string', description: 'Items to add, separated by comma+space or semicolon. Example: "Milk, Eggs, Butter"' },
+    list: z.string().describe('List name or ID'),
+    items: z.string().describe('Items to add, separated by comma+space or semicolon. Example: "Milk, Eggs, Butter"'),
   }, async ({ list: query, items: itemsStr }) => {
     const all = await api('GET', '/lists');
     const match = findList(all.lists || all, query);
     if (!match) throw new Error(`List "${query}" not found`);
 
-    // Split on ", " or ";"
     const texts = itemsStr.split(/;\s*|,\s+/).map(s => s.trim()).filter(Boolean);
     const added = [];
 
@@ -147,8 +147,8 @@ async function startMcpServer() {
   });
 
   server.tool('check_item', 'Check off (complete) an item', {
-    list: { type: 'string', description: 'List name or ID' },
-    item: { type: 'string', description: 'Item text (fuzzy match)' },
+    list: z.string().describe('List name or ID'),
+    item: z.string().describe('Item text (fuzzy match)'),
   }, async ({ list: query, item: itemQuery }) => {
     const all = await api('GET', '/lists');
     const match = findList(all.lists || all, query);
@@ -166,8 +166,8 @@ async function startMcpServer() {
   });
 
   server.tool('uncheck_item', 'Uncheck (reopen) an item', {
-    list: { type: 'string', description: 'List name or ID' },
-    item: { type: 'string', description: 'Item text (fuzzy match)' },
+    list: z.string().describe('List name or ID'),
+    item: z.string().describe('Item text (fuzzy match)'),
   }, async ({ list: query, item: itemQuery }) => {
     const all = await api('GET', '/lists');
     const match = findList(all.lists || all, query);
@@ -185,8 +185,8 @@ async function startMcpServer() {
   });
 
   server.tool('remove_item', 'Remove an item from a list', {
-    list: { type: 'string', description: 'List name or ID' },
-    item: { type: 'string', description: 'Item text (fuzzy match)' },
+    list: z.string().describe('List name or ID'),
+    item: z.string().describe('Item text (fuzzy match)'),
   }, async ({ list: query, item: itemQuery }) => {
     const all = await api('GET', '/lists');
     const match = findList(all.lists || all, query);
@@ -204,7 +204,7 @@ async function startMcpServer() {
   });
 
   server.tool('clear_checked', 'Remove all checked (completed) items from a list', {
-    list: { type: 'string', description: 'List name or ID' },
+    list: z.string().describe('List name or ID'),
   }, async ({ list: query }) => {
     const all = await api('GET', '/lists');
     const match = findList(all.lists || all, query);
@@ -215,7 +215,7 @@ async function startMcpServer() {
   });
 
   server.tool('share_list', 'Generate a share code for a list', {
-    list: { type: 'string', description: 'List name or ID' },
+    list: z.string().describe('List name or ID'),
   }, async ({ list: query }) => {
     const all = await api('GET', '/lists');
     const match = findList(all.lists || all, query);
@@ -226,7 +226,7 @@ async function startMcpServer() {
   });
 
   server.tool('join_list', 'Join a shared list using a share code', {
-    code: { type: 'string', description: 'The share code' },
+    code: z.string().describe('The share code'),
   }, async ({ code }) => {
     const data = await api('POST', '/lists/join', { share_code: code });
     return { content: [{ type: 'text', text: `Joined list: ${data.emoji || '📋'} ${data.title || data.list_id}` }] };

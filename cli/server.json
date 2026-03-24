@@ -1,0 +1,36 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.TourAround/lystbot",
+  "description": "Smart lists that your AI can actually use. Manage lists via MCP, CLI, or REST API.",
+  "repository": {
+    "url": "https://github.com/TourAround/LystBot",
+    "source": "github",
+    "subfolder": "cli"
+  },
+  "version": "0.3.5",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "lystbot",
+      "version": "0.3.5",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtime": "node",
+      "runtimeArgs": [">=18.0.0"],
+      "environmentVariables": []
+    }
+  ],
+  "tools": [
+    { "name": "list_lists", "description": "Get all your lists" },
+    { "name": "get_list", "description": "Get a specific list with items" },
+    { "name": "create_list", "description": "Create a new list" },
+    { "name": "delete_list", "description": "Delete a list" },
+    { "name": "add_items", "description": "Add one or more items to a list" },
+    { "name": "check_item", "description": "Check off an item" },
+    { "name": "uncheck_item", "description": "Uncheck an item" },
+    { "name": "remove_item", "description": "Remove an item from a list" },
+    { "name": "share_list", "description": "Generate a share code for a list" },
+    { "name": "join_list", "description": "Join a shared list via code" }
+  ]
+}
