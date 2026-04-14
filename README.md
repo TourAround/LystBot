@@ -82,9 +82,11 @@ No new AI to learn. No prompts inside the app. Just connect your existing AI and
 
 ⭐ **Favorites** - Quick-access items you use all the time
 
+🗂️ **Categories** - Structure lists into sections, move items between categories, keep uncategorized items in Other
+
 🔔 **Push Notifications** - Know when your AI or your family changes a list
 
-🌐 **Open API** - Full REST API so any AI agent can read, write, and manage your lists
+🌐 **Open API** - Full REST API so any AI agent can read, write, manage, and categorize your lists
 
 <p align="center">
   <img src="./assets/app-screenshot-dashboard.png" alt="Dashboard" width="220" />

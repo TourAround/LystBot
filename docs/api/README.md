@@ -2,43 +2,39 @@
 
 > Base URL: `https://lystbot.com/api/v1`
 
+LystBot exposes the same shared list data that powers the mobile app, CLI, and MCP server.
+
 All requests and responses use `Content-Type: application/json`.
 
 ---
 
 ## Authentication
 
-LystBot uses a dual authentication system:
+### Mobile App / Device Auth
 
-### 1. Device Auth (Mobile App)
+Use the device UUID header:
 
-Used by the mobile app. Pass the device UUID as a header:
-
-```
+```http
 X-Device-UUID: your-device-uuid
 ```
 
-### 2. Bearer Token (Agents / CLI)
+### Agents, CLI, MCP, Automations
 
-Used by AI agents, CLI, and external integrations:
+Use a Bearer API key:
 
-```
+```http
 Authorization: Bearer your-api-key
 ```
 
-To get a Bearer token, first register a device, then retrieve its API key.
+### Agent Self-Management
+
+`PATCH /agents/me` is Bearer-only. No device header is required.
 
 ---
 
-## Endpoints
+## Health
 
-### Health Check
-
-```
-GET /api/v1/health
-```
-
-No authentication required.
+### `GET /health`
 
 ```bash
 curl https://lystbot.com/api/v1/health
@@ -52,80 +48,11 @@ curl https://lystbot.com/api/v1/health
 
 ---
 
-### Device Registration
+## Lists
 
-```
-POST /api/v1/devices/register
-```
+### `GET /lists`
 
-No authentication required. Registers a new device and returns a UUID.
-
-```bash
-curl -X POST https://lystbot.com/api/v1/devices/register \
-  -H "Content-Type: application/json" \
-  -d '{"name": "My Agent", "platform": "cli"}'
-```
-
-```json
-{
-  "uuid": "550e8400-e29b-41d4-a716-446655440000",
-  "name": "My Agent",
-  "platform": "cli",
-  "createdAt": "2026-03-13T09:00:00Z"
-}
-```
-
----
-
-### Update Device
-
-```
-PATCH /api/v1/devices/{uuid}
-```
-
-Auth: `X-Device-UUID`
-
-```bash
-curl -X PATCH https://lystbot.com/api/v1/devices/YOUR_UUID \
-  -H "X-Device-UUID: YOUR_UUID" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Updated Name", "pushToken": "fcm-token-here"}'
-```
-
----
-
-### Get API Key
-
-```
-GET /api/v1/devices/{uuid}/api-key
-```
-
-Auth: `X-Device-UUID`
-
-Retrieves a Bearer token for agent/CLI authentication.
-
-```bash
-curl https://lystbot.com/api/v1/devices/YOUR_UUID/api-key \
-  -H "X-Device-UUID: YOUR_UUID"
-```
-
-```json
-{
-  "apiKey": "lystbot_ak_xxxxxxxxxxxxxxxxxxxx"
-}
-```
-
----
-
-### Lists
-
-#### Get All Lists
-
-```
-GET /api/v1/lists
-```
-
-Auth: `X-Device-UUID` or `Bearer Token`
+Returns all lists the current device / agent can access.
 
 ```bash
 curl https://lystbot.com/api/v1/lists \
@@ -133,397 +60,536 @@ curl https://lystbot.com/api/v1/lists \
 ```
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "Groceries",
-    "emoji": "🛒",
-    "itemCount": 5,
-    "checkedCount": 2,
-    "shared": true,
-    "createdAt": "2026-03-13T09:00:00Z",
-    "updatedAt": "2026-03-13T10:30:00Z"
-  }
-]
+{
+  "lists": [
+    {
+      "id": "list-uuid",
+      "title": "Groceries",
+      "type": "shopping",
+      "emoji": "🛒",
+      "is_shared": true,
+      "share_code": "ABC123",
+      "member_count": 2,
+      "item_count": 5,
+      "unchecked_count": 3,
+      "updated_at": "2026-04-14T11:00:00Z"
+    }
+  ]
+}
 ```
 
-#### Create List
+### `GET /lists/{id}`
 
-```
-POST /api/v1/lists
+Returns the full list including members, bot members, categories, and items.
+
+```bash
+curl https://lystbot.com/api/v1/lists/LIST_ID \
+  -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-Auth: `X-Device-UUID` or `Bearer Token`
+```json
+{
+  "id": "list-uuid",
+  "title": "Groceries",
+  "type": "shopping",
+  "emoji": "🛒",
+  "is_shared": true,
+  "share_code": "ABC123",
+  "hide_completed": false,
+  "members": [
+    {
+      "device_uuid": "device-uuid",
+      "name": "Alex",
+      "display_name": "Alex",
+      "label": "Alex",
+      "signature_emoji": "🙂",
+      "role": "owner"
+    }
+  ],
+  "bot_members": [
+    {
+      "api_key_id": 12,
+      "name": "TARS",
+      "signature_emoji": "🤖"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-fruit",
+      "name": "Fruits",
+      "position": 0,
+      "created_at": "2026-04-14T10:00:00Z",
+      "updated_at": "2026-04-14T10:00:00Z"
+    }
+  ],
+  "items": [
+    {
+      "id": "item-uuid",
+      "category_id": "cat-fruit",
+      "text": "Bananas",
+      "checked": false,
+      "quantity": 2,
+      "unit": null,
+      "position": 0,
+      "created_by": "device-uuid",
+      "created_by_api_key_id": 12,
+      "updated_at": "2026-04-14T10:05:00Z"
+    },
+    {
+      "id": "item-other",
+      "category_id": null,
+      "text": "Coffee",
+      "checked": false,
+      "quantity": 1,
+      "unit": null,
+      "position": 1,
+      "created_by": "device-uuid",
+      "created_by_api_key_id": null,
+      "updated_at": "2026-04-14T10:06:00Z"
+    }
+  ],
+  "updated_at": "2026-04-14T11:00:00Z"
+}
+```
+
+### `POST /lists`
+
+Create a new list.
 
 ```bash
 curl -X POST https://lystbot.com/api/v1/lists \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"name": "Groceries", "emoji": "🛒"}'
+  -d '{
+    "id": "new-list-uuid",
+    "title": "Groceries",
+    "type": "shopping",
+    "emoji": "🛒"
+  }'
 ```
 
 ```json
 {
-  "id": 1,
-  "name": "Groceries",
-  "emoji": "🛒",
-  "itemCount": 0,
-  "checkedCount": 0,
-  "shared": false,
-  "createdAt": "2026-03-13T09:00:00Z",
-  "updatedAt": "2026-03-13T09:00:00Z"
+  "id": "new-list-uuid",
+  "created_at": "2026-04-14T11:05:00Z"
 }
 ```
 
-#### Get Single List
+Valid list types: `shopping`, `todo`, `packing`, `generic`
 
-```
-GET /api/v1/lists/{id}
-```
+### `PUT /lists/{id}`
 
-Auth: `X-Device-UUID` or `Bearer Token`
+Update `title`, `emoji`, or `hide_completed`.
 
 ```bash
-curl https://lystbot.com/api/v1/lists/1 \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-```json
-{
-  "id": 1,
-  "name": "Groceries",
-  "emoji": "🛒",
-  "items": [
-    {
-      "id": 1,
-      "text": "Oat milk",
-      "checked": false,
-      "position": 0,
-      "createdAt": "2026-03-13T09:00:00Z"
-    },
-    {
-      "id": 2,
-      "text": "Bananas",
-      "checked": true,
-      "position": 1,
-      "createdAt": "2026-03-13T09:01:00Z"
-    }
-  ],
-  "shared": true,
-  "shareCode": "ABC123",
-  "members": 2,
-  "createdAt": "2026-03-13T09:00:00Z",
-  "updatedAt": "2026-03-13T10:30:00Z"
-}
-```
-
-#### Update List
-
-```
-PUT /api/v1/lists/{id}
-```
-
-Auth: `X-Device-UUID` or `Bearer Token`
-
-```bash
-curl -X PUT https://lystbot.com/api/v1/lists/1 \
+curl -X PUT https://lystbot.com/api/v1/lists/LIST_ID \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"name": "Weekly Groceries", "emoji": "🛒"}'
+  -d '{"title": "Weekly Groceries", "emoji": "🛒", "hide_completed": false}'
 ```
 
-#### Delete List
-
+```json
+{
+  "success": true
+}
 ```
-DELETE /api/v1/lists/{id}
-```
 
-Auth: `X-Device-UUID` or `Bearer Token`
+### `DELETE /lists/{id}`
+
+Delete a list.
 
 ```bash
-curl -X DELETE https://lystbot.com/api/v1/lists/1 \
+curl -X DELETE https://lystbot.com/api/v1/lists/LIST_ID \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-Returns `204 No Content` on success.
+```json
+{
+  "success": true
+}
+```
 
 ---
 
-### Items
+## Items
 
-#### Add Item to List
+### `POST /lists/{id}/items`
 
-```
-POST /api/v1/lists/{id}/items
-```
-
-Auth: `X-Device-UUID` or `Bearer Token`
+Create an item. Supports categories via `category_id`.
 
 ```bash
-curl -X POST https://lystbot.com/api/v1/lists/1/items \
+curl -X POST https://lystbot.com/api/v1/lists/LIST_ID/items \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"text": "Coffee beans"}'
+  -d '{
+    "id": "item-uuid",
+    "text": "Bananas",
+    "quantity": 2,
+    "unit": null,
+    "position": 0,
+    "category_id": "cat-fruit"
+  }'
 ```
 
 ```json
 {
-  "id": 3,
-  "text": "Coffee beans",
-  "checked": false,
-  "position": 2,
-  "createdAt": "2026-03-13T09:05:00Z"
+  "id": "item-uuid"
 }
 ```
 
-#### Update Item
+Use `"category_id": null` or omit the field to place the item in **Other** / uncategorized.
 
-```
-PUT /api/v1/lists/{id}/items/{itemId}
-```
+### `PUT /lists/{id}/items/{itemId}`
 
-Auth: `X-Device-UUID` or `Bearer Token`
+Update any of: `text`, `checked`, `quantity`, `unit`, `position`, `category_id`.
 
 ```bash
-curl -X PUT https://lystbot.com/api/v1/lists/1/items/3 \
+curl -X PUT https://lystbot.com/api/v1/lists/LIST_ID/items/ITEM_ID \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"text": "Coffee beans (whole)", "checked": true}'
+  -d '{
+    "checked": true,
+    "category_id": null
+  }'
 ```
 
-#### Delete Item
-
+```json
+{
+  "success": true,
+  "updated_at": "2026-04-14T11:10:00Z"
+}
 ```
-DELETE /api/v1/lists/{id}/items/{itemId}
-```
 
-Auth: `X-Device-UUID` or `Bearer Token`
+### `DELETE /lists/{id}/items/{itemId}`
 
 ```bash
-curl -X DELETE https://lystbot.com/api/v1/lists/1/items/3 \
+curl -X DELETE https://lystbot.com/api/v1/lists/LIST_ID/items/ITEM_ID \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-Returns `204 No Content` on success.
+```json
+{
+  "success": true
+}
+```
+
+### `DELETE /lists/{id}/items/checked`
+
+Delete all checked items in a list.
+
+```bash
+curl -X DELETE https://lystbot.com/api/v1/lists/LIST_ID/items/checked \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json
+{
+  "success": true,
+  "deleted_count": 3
+}
+```
 
 ---
 
-### Sharing
+## Categories
 
-#### Share a List
+Categories let you structure a list into sections. Items without a `category_id` belong to **Other** / uncategorized.
 
-```
-POST /api/v1/lists/{id}/share
-```
+### `POST /lists/{id}/categories`
 
-Auth: `X-Device-UUID` or `Bearer Token`
-
-Generates a share code that others can use to join the list.
+Create a category.
 
 ```bash
-curl -X POST https://lystbot.com/api/v1/lists/1/share \
+curl -X POST https://lystbot.com/api/v1/lists/LIST_ID/categories \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "cat-fruit",
+    "name": "Fruits",
+    "position": 0
+  }'
+```
+
+```json
+{
+  "id": "cat-fruit",
+  "name": "Fruits",
+  "position": 0,
+  "created_at": "2026-04-14T10:00:00Z",
+  "updated_at": "2026-04-14T10:00:00Z"
+}
+```
+
+### `PUT /lists/{id}/categories/{categoryId}`
+
+Rename a category.
+
+```bash
+curl -X PUT https://lystbot.com/api/v1/lists/LIST_ID/categories/CATEGORY_ID \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Fresh Fruits"}'
+```
+
+```json
+{
+  "success": true,
+  "id": "cat-fruit",
+  "name": "Fresh Fruits",
+  "position": 0,
+  "created_at": "2026-04-14T10:00:00Z",
+  "updated_at": "2026-04-14T10:12:00Z"
+}
+```
+
+### `PUT /lists/{id}/categories/reorder`
+
+Reorder categories.
+
+```bash
+curl -X PUT https://lystbot.com/api/v1/lists/LIST_ID/categories/reorder \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "order": [
+      {"category_id": "cat-veg", "position": 0},
+      {"category_id": "cat-fruit", "position": 1}
+    ]
+  }'
+```
+
+```json
+{
+  "success": true
+}
+```
+
+### `DELETE /lists/{id}/categories/{categoryId}`
+
+Delete a category. Its items are automatically moved to **Other** / uncategorized.
+
+```bash
+curl -X DELETE https://lystbot.com/api/v1/lists/LIST_ID/categories/CATEGORY_ID \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ```json
 {
-  "shareCode": "ABC123",
-  "listId": 1,
-  "listName": "Groceries"
+  "success": true,
+  "id": "cat-fruit",
+  "moved_count": 4
 }
 ```
 
-#### Join a Shared List
+---
 
-```
-POST /api/v1/lists/join
+## Sharing
+
+### `POST /lists/{id}/share`
+
+Generate or return the existing share code.
+
+```bash
+curl -X POST https://lystbot.com/api/v1/lists/LIST_ID/share \
+  -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-Auth: `X-Device-UUID` or `Bearer Token`
+```json
+{
+  "share_code": "ABC123"
+}
+```
+
+### `POST /lists/join`
+
+Join a shared list via invite code.
 
 ```bash
 curl -X POST https://lystbot.com/api/v1/lists/join \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"shareCode": "ABC123"}'
+  -d '{"code": "ABC123"}'
 ```
 
 ```json
 {
-  "id": 1,
-  "name": "Groceries",
+  "list_id": "list-uuid",
+  "title": "Groceries",
+  "type": "shopping",
   "emoji": "🛒",
-  "itemCount": 5,
-  "shared": true
+  "members": [
+    {
+      "device_uuid": "device-uuid",
+      "name": "Alex",
+      "signature_emoji": "🙂",
+      "role": "owner"
+    }
+  ]
 }
 ```
 
-#### Leave a Shared List
+### `POST /lists/{id}/leave`
 
-```
-POST /api/v1/lists/{id}/leave
-```
-
-Auth: `X-Device-UUID` or `Bearer Token`
+Leave a shared list.
 
 ```bash
-curl -X POST https://lystbot.com/api/v1/lists/1/leave \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-Returns `204 No Content` on success.
-
----
-
-### Favorites
-
-Favorites are reusable item templates (e.g. "Milk" that you add to your grocery list every week).
-
-#### Get All Favorites
-
-```
-GET /api/v1/favorites
-```
-
-Auth: `X-Device-UUID` or `Bearer Token`
-
-```bash
-curl https://lystbot.com/api/v1/favorites \
+curl -X POST https://lystbot.com/api/v1/lists/LIST_ID/leave \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ```json
-[
-  {
-    "id": 1,
-    "text": "Milk",
-    "emoji": "🥛",
-    "useCount": 12,
-    "lastUsedAt": "2026-03-12T18:00:00Z"
-  }
-]
+{
+  "success": true
+}
 ```
 
-#### Create Favorite
+---
 
-```
-POST /api/v1/favorites
+## Favorites
+
+### `GET /favorites`
+
+Optional filter: `?type=shopping`
+
+```bash
+curl https://lystbot.com/api/v1/favorites?type=shopping \
+  -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-Auth: `X-Device-UUID` or `Bearer Token`
+```json
+{
+  "favorites": [
+    {
+      "id": "fav-uuid",
+      "text": "Milk",
+      "list_type": "shopping",
+      "category": "Dairy",
+      "use_count": 12,
+      "updated_at": "2026-04-14T10:30:00Z"
+    }
+  ]
+}
+```
+
+### `POST /favorites`
 
 ```bash
 curl -X POST https://lystbot.com/api/v1/favorites \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"text": "Milk", "emoji": "🥛"}'
+  -d '{
+    "id": "fav-uuid",
+    "text": "Milk",
+    "list_type": "shopping",
+    "category": "Dairy"
+  }'
 ```
 
-#### Update Favorite
-
+```json
+{
+  "id": "fav-uuid",
+  "created_at": "2026-04-14T10:30:00Z"
+}
 ```
-PUT /api/v1/favorites/{id}
-```
 
-Auth: `X-Device-UUID` or `Bearer Token`
+### `PUT /favorites/{id}`
 
 ```bash
-curl -X PUT https://lystbot.com/api/v1/favorites/1 \
+curl -X PUT https://lystbot.com/api/v1/favorites/FAVORITE_ID \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"text": "Oat Milk", "emoji": "🥛"}'
+  -d '{"text": "Oat Milk", "category": "Dairy"}'
 ```
 
-#### Delete Favorite
-
+```json
+{
+  "success": true
+}
 ```
-DELETE /api/v1/favorites/{id}
-```
 
-Auth: `X-Device-UUID` or `Bearer Token`
+### `DELETE /favorites/{id}`
 
 ```bash
-curl -X DELETE https://lystbot.com/api/v1/favorites/1 \
+curl -X DELETE https://lystbot.com/api/v1/favorites/FAVORITE_ID \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-Returns `204 No Content` on success.
-
-#### Use Favorite
-
-```
-POST /api/v1/favorites/{id}/use
+```json
+{
+  "success": true
+}
 ```
 
-Auth: `X-Device-UUID` or `Bearer Token`
+### `POST /favorites/{id}/use`
 
-Adds the favorite item to a specified list.
+Increment `use_count` for ranking.
 
 ```bash
-curl -X POST https://lystbot.com/api/v1/favorites/1/use \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"listId": 1}'
+curl -X POST https://lystbot.com/api/v1/favorites/FAVORITE_ID/use \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json
+{
+  "use_count": 13
+}
 ```
 
 ---
 
-### Agent Profile
+## Agent Profile
 
-#### Update Agent Profile
+### `PATCH /agents/me`
 
-```
-PATCH /api/v1/agents/me
-```
-
-Auth: `Bearer Token` only
+Set the bot's display name and / or signature emoji.
 
 ```bash
 curl -X PATCH https://lystbot.com/api/v1/agents/me \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"name": "TARS", "description": "Personal AI assistant"}'
+  -d '{"name": "TARS", "signature_emoji": "🤖"}'
 ```
-
----
-
-## Error Responses
-
-All errors follow this format:
 
 ```json
 {
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "List not found"
-  }
+  "success": true,
+  "name": "TARS",
+  "signature_emoji": "🤖"
 }
 ```
 
-**Common error codes:**
+---
 
-- `400` - **BAD_REQUEST** - Invalid or missing parameters
-- `401` - **UNAUTHORIZED** - Missing or invalid authentication
-- `403` - **FORBIDDEN** - You don't have access to this resource
-- `404` - **NOT_FOUND** - Resource not found
-- `409` - **CONFLICT** - Resource already exists (e.g. already joined a list)
-- `422` - **VALIDATION_ERROR** - Request body validation failed
-- `429` - **RATE_LIMITED** - Too many requests, slow down
-- `500` - **INTERNAL_ERROR** - Something went wrong on our end
+## Errors
+
+Errors use this shape:
+
+```json
+{
+  "error": "error_code",
+  "message": "Human-readable description"
+}
+```
+
+Common codes:
+
+- `missing_fields`
+- `not_found`
+- `forbidden`
+- `invalid_api_key`
+- `invalid_code`
+- `already_member`
+- `invalid_category`
+- `invalid_type`
+- `conflict`
+- `max_items_reached`
 
 ---
 
-## Rate Limits
+## Notes
 
-- **100 requests per minute** per API key
-- `429` responses include a `Retry-After` header
-
----
-
-## Tips for AI Agents
-
-1. **Register once, reuse the token** - Don't register a new device for every session
-2. **Use Bearer tokens** - They're designed for programmatic access
-3. **Check items, don't delete them** - Users expect to see what was completed
-4. **Respect list ownership** - Only modify lists you have access to
-5. **Parse the error codes** - They're machine-readable by design
+- All list, item, category, and favorite IDs should be UUID v4
+- `quantity` is limited to `1..99`
+- Items without `category_id` appear in **Other** / uncategorized
+- Deleting a category moves its items to **Other** / uncategorized
+- The CLI (`npx lystbot`) and built-in MCP server use these same endpoints
