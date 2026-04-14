@@ -121,6 +121,27 @@ function findItem(items, query) {
   return null;
 }
 
+// Fuzzy match: find a category by name or ID from an array of categories
+function findCategory(categories, query) {
+  if (!Array.isArray(categories)) return null;
+
+  // Try exact ID match
+  const byId = categories.find(c => String(c.id) === String(query));
+  if (byId) return byId;
+
+  const lower = String(query).toLowerCase();
+  const exact = categories.find(c => (c.name || '').toLowerCase() === lower);
+  if (exact) return exact;
+
+  const starts = categories.find(c => (c.name || '').toLowerCase().startsWith(lower));
+  if (starts) return starts;
+
+  const includes = categories.find(c => (c.name || '').toLowerCase().includes(lower));
+  if (includes) return includes;
+
+  return null;
+}
+
 // Resolve a list query to {list, detail} - fetches all lists then the specific one
 async function resolveList(query, { withItems = false } = {}) {
   const res = await request('GET', '/lists');
@@ -156,4 +177,4 @@ function autoEmoji(name) {
   return '📋';
 }
 
-module.exports = { request, rawRequest, findList, findItem, resolveList, autoEmoji };
+module.exports = { request, rawRequest, findList, findItem, findCategory, resolveList, autoEmoji };

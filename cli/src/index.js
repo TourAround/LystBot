@@ -177,28 +177,209 @@ program
     const shared = detail.is_shared ? ` 👥 (${memberCount} member${memberCount === 1 ? '' : 's'})` : '';
     console.log(`\n${emoji} ${listTitle}${shared}\n`);
 
-    if (!detail.items || !detail.items.length) {
+    const items = detail.items || [];
+    const categories = Array.isArray(detail.categories)
+      ? [...detail.categories].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+      : [];
+
+    if (!items.length) {
       console.log('  (empty list)');
       return;
     }
 
-    for (const item of detail.items) {
-      if (item.checked) {
-        console.log(`  ✅ ~~${item.text}~~`);
-      } else {
-        console.log(`  ⬜ ${item.text}`);
+    // If categories exist, render sectioned view like the app.
+    if (categories.length > 0) {
+      const byCategory = new Map();
+      for (const c of categories) byCategory.set(c.id, []);
+      const other = [];
+
+      for (const item of items) {
+        const cid = item.category_id || null;
+        if (cid && byCategory.has(cid)) byCategory.get(cid).push(item);
+        else other.push(item);
+      }
+
+      for (const c of categories) {
+        const sectionItems = byCategory.get(c.id) || [];
+        console.log(`  ${c.name}`);
+        if (sectionItems.length === 0) {
+          console.log('    (empty)');
+        } else {
+          for (const item of sectionItems) {
+            console.log(item.checked ? `    ✅ ~~${item.text}~~` : `    ⬜ ${item.text}`);
+          }
+        }
+        console.log('');
+      }
+
+      if (other.length > 0) {
+        console.log('  Other');
+        for (const item of other) {
+          console.log(item.checked ? `    ✅ ~~${item.text}~~` : `    ⬜ ${item.text}`);
+        }
+      }
+    } else {
+      // Flat view
+      for (const item of items) {
+        console.log(item.checked ? `  ✅ ~~${item.text}~~` : `  ⬜ ${item.text}`);
       }
     }
 
-    const checked = detail.items.filter(i => i.checked).length;
-    console.log(`\n  ${checked}/${detail.items.length} done`);
+    const checked = items.filter(i => i.checked).length;
+    console.log(`\n  ${checked}/${items.length} done`);
+  });
+
+// ── categories (read-only shortcut) ───────────────────
+program
+  .command('categories <list>')
+  .description('Show categories in a list (including Other/uncategorized)')
+  .option('--json', 'Output as JSON')
+  .action(async (listQuery, options) => {
+    config.getApiKey();
+    const { list, detail } = await api.resolveList(listQuery, { withItems: true });
+
+    const categories = Array.isArray(detail.categories)
+      ? [...detail.categories].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+      : [];
+    const items = detail.items || [];
+
+    if (options.json) {
+      const otherCount = items.filter(i => !i.category_id).length;
+      console.log(JSON.stringify({ list_id: list.id, categories, other_count: otherCount }, null, 2));
+      return;
+    }
+
+    console.log(`\n${detail.emoji || '📋'} ${detail.title || detail.name} — Categories\n`);
+    if (categories.length === 0) {
+      console.log('  (no categories yet)');
+    } else {
+      for (const c of categories) {
+        const count = items.filter(i => i.category_id === c.id).length;
+        console.log(`  • ${c.name}  (${count} item${count === 1 ? '' : 's'})`);
+      }
+    }
+
+    const otherCount = items.filter(i => !i.category_id).length;
+    console.log(`  • Other  (${otherCount} item${otherCount === 1 ? '' : 's'})`);
+  });
+
+// ── category (manage) ─────────────────────────────────
+const categoryCmd = program
+  .command('category')
+  .description('Manage list categories');
+
+categoryCmd
+  .command('add <list> <name>')
+  .description('Create a category')
+  .option('--position <n>', 'Insert position (default: end)')
+  .action(async (listQuery, name, options) => {
+    config.getApiKey();
+    const { list } = await api.resolveList(listQuery);
+    const body = { id: randomUUID(), name: name.trim() };
+    if (options.position !== undefined) body.position = parseInt(options.position, 10);
+    const res = await api.request('POST', `/lists/${list.id}/categories`, body);
+    console.log(`✅ Category created: ${res.name} [id: ${res.id}]`);
+  });
+
+categoryCmd
+  .command('rename <list> <category> <newName>')
+  .description('Rename a category')
+  .action(async (listQuery, categoryQuery, newName) => {
+    config.getApiKey();
+    const { list, detail } = await api.resolveList(listQuery, { withItems: true });
+    const cat = api.findCategory(detail.categories || [], categoryQuery);
+    if (!cat) {
+      const names = (detail.categories || []).map(c => c.name).join(', ');
+      console.error(`❌ Category '${categoryQuery}' not found. Categories: ${names || '(none)'}`);
+      process.exit(1);
+    }
+    const res = await api.request('PUT', `/lists/${list.id}/categories/${cat.id}`, { name: newName.trim() });
+    console.log(`✅ Category renamed: ${cat.name} → ${res.name}`);
+  });
+
+categoryCmd
+  .command('delete <list> <category>')
+  .description('Delete a category (items will move to Other)')
+  .option('--force', 'Skip confirmation')
+  .action(async (listQuery, categoryQuery, options) => {
+    config.getApiKey();
+    const { list, detail } = await api.resolveList(listQuery, { withItems: true });
+    const cat = api.findCategory(detail.categories || [], categoryQuery);
+    if (!cat) {
+      const names = (detail.categories || []).map(c => c.name).join(', ');
+      console.error(`❌ Category '${categoryQuery}' not found. Categories: ${names || '(none)'}`);
+      process.exit(1);
+    }
+
+    if (!options.force) {
+      const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+      const answer = await new Promise(resolve =>
+        rl.question(`🗑️  Delete category '${cat.name}'? Items will be moved to Other. (y/N) `, resolve)
+      );
+      rl.close();
+      if (answer.toLowerCase() !== 'y') {
+        console.log('Cancelled.');
+        process.exit(0);
+      }
+    }
+
+    const res = await api.request('DELETE', `/lists/${list.id}/categories/${cat.id}`);
+    console.log(`🗑️  Deleted category: ${cat.name} (moved ${res.moved_count ?? 0} item(s) to Other)`);
+  });
+
+categoryCmd
+  .command('reorder <list>')
+  .description('Reorder categories')
+  .requiredOption('--order <csv>', 'Comma-separated category names or IDs in desired order')
+  .action(async (listQuery, options) => {
+    config.getApiKey();
+    const { list, detail } = await api.resolveList(listQuery, { withItems: true });
+    const categories = detail.categories || [];
+    if (!categories.length) {
+      console.error('❌ This list has no categories to reorder.');
+      process.exit(1);
+    }
+
+    const parts = String(options.order)
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    if (parts.length === 0) {
+      console.error('❌ --order cannot be empty');
+      process.exit(1);
+    }
+
+    const resolved = [];
+    for (const q of parts) {
+      const cat = api.findCategory(categories, q);
+      if (!cat) {
+        console.error(`❌ Category '${q}' not found in list.`);
+        process.exit(1);
+      }
+      resolved.push(cat);
+    }
+
+    // Require full order to avoid surprises
+    const uniqueIds = new Set(resolved.map(c => c.id));
+    if (uniqueIds.size !== categories.length) {
+      console.error('❌ --order must include each category exactly once.');
+      console.error(`   Expected ${categories.length} unique categories, got ${uniqueIds.size}.`);
+      process.exit(1);
+    }
+
+    const order = resolved.map((c, idx) => ({ category_id: c.id, position: idx }));
+    await api.request('PUT', `/lists/${list.id}/categories/reorder`, { order });
+    console.log('✅ Categories reordered.');
   });
 
 // ── add ────────────────────────────────────────────────
 program
   .command('add <list> <items...>')
   .description('Add items to a list (supports comma-separated)')
-  .action(async (listQuery, rawItems) => {
+  .option('--category <category>', 'Add items to a category (name or ID)')
+  .option('--create-category', 'Auto-create the category if it does not exist (only works with --category name)')
+  .action(async (listQuery, rawItems, options) => {
     config.getApiKey();
 
     // Smart parsing: each CLI argument is one item.
@@ -246,6 +427,30 @@ program
       console.log(`✨ Created list: ${emoji} ${listQuery}`);
     }
 
+    // Resolve category (optional)
+    let categoryId = null;
+    if (options.category) {
+      const detail = await api.request('GET', `/lists/${match.id}`);
+      const cat = api.findCategory(detail.categories || [], options.category);
+      if (!cat) {
+        if (options.createCategory) {
+          const created = await api.request('POST', `/lists/${match.id}/categories`, {
+            id: randomUUID(),
+            name: String(options.category).trim(),
+          });
+          categoryId = created.id;
+          console.log(`✅ Created category: ${created.name}`);
+        } else {
+          const names = (detail.categories || []).map(c => c.name).join(', ');
+          console.error(`❌ Category '${options.category}' not found. Categories: ${names || '(none)'}`);
+          console.error('   Tip: Use --create-category to create it automatically.');
+          process.exit(1);
+        }
+      } else {
+        categoryId = cat.id;
+      }
+    }
+
     // Add items one by one (each needs a client-generated UUID)
     let added = 0;
     for (let idx = 0; idx < items.length; idx++) {
@@ -255,6 +460,7 @@ program
         quantity: 1,
         unit: null,
         position: idx,
+        category_id: categoryId,
       });
       added++;
     }
@@ -264,6 +470,40 @@ program
     for (const text of items) {
       console.log(`   • ${text}`);
     }
+  });
+
+// ── move (item category) ──────────────────────────────
+program
+  .command('move <list> <item>')
+  .description('Move an item to a category (or to Other)')
+  .requiredOption('--category <category>', 'Target category name/ID, or "other" to uncategorize')
+  .action(async (listQuery, itemQuery, options) => {
+    config.getApiKey();
+    const { list, detail } = await api.resolveList(listQuery, { withItems: true });
+
+    const item = api.findItem(detail.items || [], itemQuery);
+    if (!item) {
+      const names = (detail.items || []).map(i => i.text).join(', ');
+      console.error(`❌ Item '${itemQuery}' not found in ${list.title || list.name}. Items: ${names || '(empty)'}`);
+      process.exit(1);
+    }
+
+    const q = String(options.category).trim().toLowerCase();
+    let categoryId = null;
+    if (q === 'other' || q === 'uncategorized' || q === 'none' || q === 'null') {
+      categoryId = null;
+    } else {
+      const cat = api.findCategory(detail.categories || [], options.category);
+      if (!cat) {
+        const names = (detail.categories || []).map(c => c.name).join(', ');
+        console.error(`❌ Category '${options.category}' not found. Categories: ${names || '(none)'}`);
+        process.exit(1);
+      }
+      categoryId = cat.id;
+    }
+
+    await api.request('PUT', `/lists/${list.id}/items/${item.id}`, { category_id: categoryId });
+    console.log(`✅ Moved: ${item.text} → ${categoryId ? options.category : 'Other'}`);
   });
 
 // ── check ──────────────────────────────────────────────

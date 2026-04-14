@@ -9,6 +9,12 @@ npx lystbot login <your-api-key>
 npx lystbot lists
 npx lystbot add "Groceries" "Milk, Eggs, Butter"
 npx lystbot check "Groceries" "Milk"
+
+# Categories
+npx lystbot categories "Groceries"
+npx lystbot category add "Groceries" "Fruits"
+npx lystbot add "Groceries" "Bananas" --category "Fruits"
+npx lystbot move "Groceries" "Bananas" --category other
 ```
 
 ## MCP Server (Claude Desktop, Cursor, Windsurf)
@@ -65,8 +71,15 @@ Add to `.cursor/mcp.json` or `.windsurf/mcp.json`:
 | `check_item` | Check off an item |
 | `uncheck_item` | Reopen a checked item |
 | `remove_item` | Delete an item |
+| `clear_checked` | Remove all checked (completed) items from a list |
 | `share_list` | Generate a share code |
 | `join_list` | Join a shared list |
+| `list_categories` | List categories for a list |
+| `create_category` | Create a category |
+| `rename_category` | Rename a category |
+| `delete_category` | Delete a category |
+| `reorder_categories` | Reorder categories |
+| `move_item` | Move an item to a category (or Other) |
 
 ## Documentation
 

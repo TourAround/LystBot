@@ -164,6 +164,12 @@ lystbot check "Groceries" "Milk"             # Check off an item
 lystbot uncheck "Groceries" "Milk"           # Uncheck an item
 lystbot remove "Groceries" "Milk"            # Remove an item
 
+# Categories
+lystbot categories "Groceries"                 # List categories (incl. Other)
+lystbot category add "Groceries" "Fruits"      # Create a category
+lystbot add "Groceries" "Bananas" --category "Fruits"   # Add into a category
+lystbot move "Groceries" "Bananas" --category other      # Move to Other/uncategorized
+
 # Sharing
 lystbot share "Groceries"                  # Generate a share code
 lystbot join ABC123                        # Join a shared list
@@ -243,8 +249,15 @@ Add the same config to your editor's MCP settings:
 | `check_item` | Check off an item |
 | `uncheck_item` | Uncheck an item |
 | `remove_item` | Remove an item from a list |
+| `clear_checked` | Remove all checked (completed) items from a list |
 | `share_list` | Generate a share code for a list |
 | `join_list` | Join a shared list via code |
+| `list_categories` | List categories for a list |
+| `create_category` | Create a category |
+| `rename_category` | Rename a category |
+| `delete_category` | Delete a category |
+| `reorder_categories` | Reorder categories |
+| `move_item` | Move an item to a category (or Other) |
 
 ---
 
