@@ -1,5 +1,6 @@
 const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
 const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
+const { randomUUID } = require('crypto');
 const { z } = require('zod');
 const config = require('./config');
 
@@ -47,10 +48,22 @@ function findCategory(categories, query) {
 }
 
 function uuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = Math.random() * 16 | 0;
-    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
+  return randomUUID();
+}
+
+function remindersArray(data) {
+  return data?.reminders || data || [];
+}
+
+function reminderObject(data) {
+  return data?.reminder || data;
+}
+
+function formatReminder(reminder) {
+  const status = reminder.is_enabled === false ? 'disabled' : 'enabled';
+  const repeat = reminder.repeat && reminder.repeat !== 'none' ? `, ${reminder.repeat}` : '';
+  const timezone = reminder.timezone ? ` (${reminder.timezone})` : '';
+  return `⏰ ${reminder.title || '(untitled reminder)'} - ${reminder.scheduled_at || '(no scheduled_at)'}${timezone} [${status}${repeat}] [id: ${reminder.id}]`;
 }
 
 // --- MCP Server ---
@@ -67,6 +80,74 @@ async function startMcpServer() {
   });
 
   // --- Tools ---
+
+  server.tool('list_reminders', 'Get all reminders', {}, async () => {
+    const data = await api('GET', '/reminders');
+    const reminders = remindersArray(data);
+    const text = reminders.length === 0
+      ? 'No reminders found.'
+      : reminders.map(formatReminder).join('\n');
+    return { content: [{ type: 'text', text }] };
+  });
+
+  server.tool('get_reminder', 'Get one reminder', {
+    id: z.string().describe('Reminder ID'),
+  }, async ({ id }) => {
+    const reminder = reminderObject(await api('GET', `/reminders/${id}`));
+    return { content: [{ type: 'text', text: formatReminder(reminder) }] };
+  });
+
+  server.tool('create_reminder', 'Create a reminder', {
+    title: z.string().describe('Reminder title'),
+    scheduled_at: z.string().describe('Scheduled datetime string'),
+    timezone: z.string().optional().describe('Timezone (default: Europe/Berlin)'),
+    repeat: z.string().optional().describe('Repeat: none, daily, weekly, biweekly, monthly, yearly'),
+    is_enabled: z.boolean().optional().describe('Whether the reminder is enabled (default: true)'),
+  }, async ({ title, scheduled_at, timezone, repeat, is_enabled }) => {
+    const body = {
+      id: uuid(),
+      title,
+      scheduled_at,
+      timezone: timezone || 'Europe/Berlin',
+      repeat: repeat || 'none',
+      is_enabled: is_enabled !== undefined ? is_enabled : true,
+    };
+    const res = await api('POST', '/reminders', body);
+    const reminder = reminderObject(res) || body;
+    return { content: [{ type: 'text', text: `Created reminder: ${formatReminder(reminder)}` }] };
+  });
+
+  server.tool('update_reminder', 'Update a reminder', {
+    id: z.string().describe('Reminder ID'),
+    title: z.string().optional().describe('Reminder title'),
+    scheduled_at: z.string().optional().describe('Scheduled datetime string'),
+    timezone: z.string().optional().describe('Timezone'),
+    repeat: z.string().optional().describe('Repeat: none, daily, weekly, biweekly, monthly, yearly'),
+    is_enabled: z.boolean().optional().describe('Whether the reminder is enabled'),
+  }, async ({ id, title, scheduled_at, timezone, repeat, is_enabled }) => {
+    const body = {};
+    if (title !== undefined) body.title = title;
+    if (scheduled_at !== undefined) body.scheduled_at = scheduled_at;
+    if (timezone !== undefined) body.timezone = timezone;
+    if (repeat !== undefined) body.repeat = repeat;
+    if (is_enabled !== undefined) body.is_enabled = is_enabled;
+
+    if (Object.keys(body).length === 0) {
+      throw new Error('No fields provided to update.');
+    }
+
+    const res = await api('PUT', `/reminders/${id}`, body);
+    const reminder = reminderObject(res) || { id, ...body };
+    return { content: [{ type: 'text', text: `Updated reminder: ${formatReminder(reminder)}` }] };
+  });
+
+  server.tool('delete_reminder', 'Delete a reminder', {
+    id: z.string().describe('Reminder ID'),
+  }, async ({ id }) => {
+    const reminder = reminderObject(await api('GET', `/reminders/${id}`));
+    await api('DELETE', `/reminders/${id}`);
+    return { content: [{ type: 'text', text: `Deleted reminder: ${reminder.title} [id: ${id}]` }] };
+  });
 
   server.tool('list_lists', 'Get all lists', {}, async () => {
     const data = await api('GET', '/lists');

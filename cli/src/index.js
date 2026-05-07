@@ -157,6 +157,200 @@ program
     console.log(`\n  ${lists.length} list${lists.length === 1 ? '' : 's'} total`);
   });
 
+function getRemindersArray(res) {
+  return res?.reminders || res || [];
+}
+
+function getReminderObject(res) {
+  return res?.reminder || res;
+}
+
+function formatReminderLine(reminder) {
+  const status = reminder.is_enabled === false ? 'disabled' : 'enabled';
+  const repeat = reminder.repeat && reminder.repeat !== 'none' ? `, ${reminder.repeat}` : '';
+  const timezone = reminder.timezone ? ` (${reminder.timezone})` : '';
+  return `  ⏰ ${reminder.title || '(untitled reminder)'} - ${reminder.scheduled_at || '(no scheduled_at)'}${timezone} [${status}${repeat}]`;
+}
+
+function printReminder(reminder) {
+  console.log(`⏰ ${reminder.title}`);
+  console.log(`   ID:           ${reminder.id}`);
+  console.log(`   Scheduled at: ${reminder.scheduled_at}`);
+  console.log(`   Timezone:     ${reminder.timezone || 'Europe/Berlin'}`);
+  console.log(`   Repeat:       ${reminder.repeat || 'none'}`);
+  console.log(`   Status:       ${reminder.is_enabled === false ? 'disabled' : 'enabled'}`);
+}
+
+async function confirmReminderDelete(reminder) {
+  if (!process.stdin.isTTY) {
+    console.error('❌ Refusing to delete without confirmation in non-interactive mode. Use --yes to confirm.');
+    process.exit(1);
+  }
+
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  const answer = await new Promise(resolve =>
+    rl.question(`🗑️  Delete reminder '${reminder.title}'? This cannot be undone. (y/N) `, resolve)
+  );
+  rl.close();
+
+  if (answer.toLowerCase() !== 'y') {
+    console.log('Cancelled.');
+    process.exit(0);
+  }
+}
+
+// ── reminders ─────────────────────────────────────────
+program
+  .command('reminders')
+  .description('Show all your reminders')
+  .option('--json', 'Output as JSON')
+  .action(async (options) => {
+    config.getApiKey();
+    const res = await api.request('GET', '/reminders');
+    const reminders = getRemindersArray(res);
+
+    if (options.json) {
+      console.log(JSON.stringify(reminders, null, 2));
+      return;
+    }
+
+    if (!reminders.length) {
+      console.log('⏰ No reminders yet. Create one: lystbot remind "Take vitamins" --at "2026-05-08 09:00"');
+      return;
+    }
+
+    console.log('⏰ Your Reminders\n');
+    for (const reminder of reminders) {
+      console.log(formatReminderLine(reminder));
+    }
+    console.log(`\n  ${reminders.length} reminder${reminders.length === 1 ? '' : 's'} total`);
+  });
+
+// ── reminder ──────────────────────────────────────────
+program
+  .command('reminder <id>')
+  .description('Show one reminder')
+  .option('--json', 'Output as JSON')
+  .action(async (id, options) => {
+    config.getApiKey();
+    const reminder = getReminderObject(await api.request('GET', `/reminders/${id}`));
+
+    if (options.json) {
+      console.log(JSON.stringify(reminder, null, 2));
+      return;
+    }
+
+    printReminder(reminder);
+  });
+
+// ── remind ────────────────────────────────────────────
+program
+  .command('remind <title>')
+  .description('Create a reminder')
+  .requiredOption('--at <datetime>', 'Scheduled datetime string')
+  .option('--timezone <tz>', 'Timezone', 'Europe/Berlin')
+  .option('--repeat <repeat>', 'Repeat: none, daily, weekly, biweekly, monthly, yearly', 'none')
+  .option('--disabled', 'Create as disabled')
+  .option('--json', 'Output as JSON')
+  .action(async (title, options) => {
+    config.getApiKey();
+    const body = {
+      id: randomUUID(),
+      title: title.trim(),
+      scheduled_at: options.at,
+      timezone: options.timezone,
+      repeat: options.repeat,
+      is_enabled: !options.disabled,
+    };
+
+    if (!body.title) {
+      console.error('❌ Reminder title cannot be empty.');
+      process.exit(1);
+    }
+
+    const res = await api.request('POST', '/reminders', body);
+    const reminder = getReminderObject(res) || body;
+
+    if (options.json) {
+      console.log(JSON.stringify(reminder, null, 2));
+      return;
+    }
+
+    console.log(`✅ Reminder created: ${reminder.title} [id: ${reminder.id}]`);
+    console.log(`   ${reminder.scheduled_at} (${reminder.timezone || body.timezone})`);
+  });
+
+// ── reminder-update ───────────────────────────────────
+program
+  .command('reminder-update <id>')
+  .description('Update a reminder')
+  .option('--title <title>', 'Reminder title')
+  .option('--at <datetime>', 'Scheduled datetime string')
+  .option('--timezone <tz>', 'Timezone')
+  .option('--repeat <repeat>', 'Repeat: none, daily, weekly, biweekly, monthly, yearly')
+  .option('--enabled', 'Enable the reminder')
+  .option('--disabled', 'Disable the reminder')
+  .option('--json', 'Output as JSON')
+  .action(async (id, options) => {
+    config.getApiKey();
+
+    if (options.enabled && options.disabled) {
+      console.error('❌ Use either --enabled or --disabled, not both.');
+      process.exit(1);
+    }
+
+    const body = {};
+    if (options.title !== undefined) body.title = options.title;
+    if (options.at !== undefined) body.scheduled_at = options.at;
+    if (options.timezone !== undefined) body.timezone = options.timezone;
+    if (options.repeat !== undefined) body.repeat = options.repeat;
+    if (options.enabled) body.is_enabled = true;
+    if (options.disabled) body.is_enabled = false;
+
+    if (Object.keys(body).length === 0) {
+      console.error('❌ No fields provided. Use --title, --at, --timezone, --repeat, --enabled, or --disabled.');
+      process.exit(1);
+    }
+
+    const res = await api.request('PUT', `/reminders/${id}`, body);
+    const reminder = getReminderObject(res) || { id, ...body };
+
+    if (options.json) {
+      console.log(JSON.stringify(reminder, null, 2));
+      return;
+    }
+
+    console.log(`✅ Reminder updated: ${reminder.title || id}`);
+  });
+
+// ── reminder-delete ───────────────────────────────────
+program
+  .command('reminder-delete <id>')
+  .description('Delete a reminder')
+  .option('--yes', 'Skip confirmation')
+  .option('--json', 'Output as JSON')
+  .action(async (id, options) => {
+    config.getApiKey();
+
+    let reminder = { id, title: id };
+    if (!options.yes || !options.json) {
+      reminder = getReminderObject(await api.request('GET', `/reminders/${id}`));
+    }
+
+    if (!options.yes) {
+      await confirmReminderDelete(reminder);
+    }
+
+    await api.request('DELETE', `/reminders/${id}`);
+
+    if (options.json) {
+      console.log(JSON.stringify({ deleted: true, id }, null, 2));
+      return;
+    }
+
+    console.log(`🗑️  Deleted reminder: ${reminder.title || id}`);
+  });
+
 // ── show ───────────────────────────────────────────────
 program
   .command('show <list>')
