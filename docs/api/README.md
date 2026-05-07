@@ -2,7 +2,7 @@
 
 > Base URL: `https://lystbot.com/api/v1`
 
-LystBot exposes the same shared list data that powers the mobile app, CLI, and MCP server.
+LystBot exposes the same list, category, and reminder data that powers the mobile app, CLI, and MCP server.
 
 All requests and responses use `Content-Type: application/json`.
 
@@ -434,6 +434,145 @@ Leave a shared list.
 
 ```bash
 curl -X POST https://lystbot.com/api/v1/lists/LIST_ID/leave \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json
+{
+  "success": true
+}
+```
+
+---
+
+## Reminders
+
+Reminders can be managed by agents, the CLI, MCP server, and automations with the same Bearer API key auth shown above.
+
+Fields:
+
+- `id`: reminder UUID
+- `title`: reminder text
+- `scheduled_at`: scheduled date/time string
+- `timezone`: IANA timezone, for example `Europe/Berlin`
+- `repeat`: `none`, `daily`, `weekly`, `biweekly`, `monthly`, `yearly`
+- `is_enabled`: whether the reminder is active
+
+One-time reminders with `"repeat": "none"` cannot be created in the past.
+
+### `GET /reminders`
+
+Returns all reminders for the current device / agent.
+
+```bash
+curl https://lystbot.com/api/v1/reminders \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json
+{
+  "reminders": [
+    {
+      "id": "reminder-uuid",
+      "title": "Take vitamins",
+      "scheduled_at": "2026-05-08 09:00",
+      "timezone": "Europe/Berlin",
+      "repeat": "none",
+      "is_enabled": true
+    }
+  ]
+}
+```
+
+### `POST /reminders`
+
+Create a reminder.
+
+```bash
+curl -X POST https://lystbot.com/api/v1/reminders \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "reminder-uuid",
+    "title": "Take vitamins",
+    "scheduled_at": "2026-05-08 09:00",
+    "timezone": "Europe/Berlin",
+    "repeat": "none",
+    "is_enabled": true
+  }'
+```
+
+```json
+{
+  "reminder": {
+    "id": "reminder-uuid",
+    "title": "Take vitamins",
+    "scheduled_at": "2026-05-08 09:00",
+    "timezone": "Europe/Berlin",
+    "repeat": "none",
+    "is_enabled": true
+  }
+}
+```
+
+### `GET /reminders/{id}`
+
+Returns one reminder.
+
+```bash
+curl https://lystbot.com/api/v1/reminders/REMINDER_ID \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json
+{
+  "reminder": {
+    "id": "reminder-uuid",
+    "title": "Take vitamins",
+    "scheduled_at": "2026-05-08 09:00",
+    "timezone": "Europe/Berlin",
+    "repeat": "none",
+    "is_enabled": true
+  }
+}
+```
+
+### `PUT /reminders/{id}`
+
+Update any of: `title`, `scheduled_at`, `timezone`, `repeat`, `is_enabled`.
+
+```bash
+curl -X PUT https://lystbot.com/api/v1/reminders/REMINDER_ID \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Take supplements",
+    "scheduled_at": "2026-05-09 09:00",
+    "timezone": "Europe/Berlin",
+    "repeat": "daily",
+    "is_enabled": true
+  }'
+```
+
+```json
+{
+  "reminder": {
+    "id": "reminder-uuid",
+    "title": "Take supplements",
+    "scheduled_at": "2026-05-09 09:00",
+    "timezone": "Europe/Berlin",
+    "repeat": "daily",
+    "is_enabled": true
+  }
+}
+```
+
+### `DELETE /reminders/{id}`
+
+Delete a reminder.
+
+```bash
+curl -X DELETE https://lystbot.com/api/v1/reminders/REMINDER_ID \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 

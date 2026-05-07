@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.TourAround/lystbot",
-  "description": "Smart lists that your AI can actually use. Manage lists via MCP, CLI, or REST API.",
+  "description": "Smart lists and reminders that your AI can actually use. Manage lists, categories, and reminders via MCP, CLI, or REST API.",
   "repository": {
     "url": "https://github.com/TourAround/LystBot",
     "source": "github",
     "subfolder": "cli"
   },
-  "version": "0.3.7",
+  "version": "0.3.8",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "lystbot",
-      "version": "0.3.7",
+      "version": "0.3.8",
       "transport": {
         "type": "stdio"
       },
@@ -39,6 +39,12 @@
     { "name": "rename_category", "description": "Rename a category" },
     { "name": "delete_category", "description": "Delete a category" },
     { "name": "reorder_categories", "description": "Reorder categories" },
-    { "name": "move_item", "description": "Move an item to a category (or Other)" }
+    { "name": "move_item", "description": "Move an item to a category (or Other)" },
+
+    { "name": "list_reminders", "description": "Get all reminders" },
+    { "name": "get_reminder", "description": "Get one reminder" },
+    { "name": "create_reminder", "description": "Create a reminder" },
+    { "name": "update_reminder", "description": "Update a reminder" },
+    { "name": "delete_reminder", "description": "Delete a reminder" }
   ]
 }

@@ -2,7 +2,7 @@
   <img src="./assets/lystbot-logo-with-icon.png" alt="LystBot" width="320" />
 </p>
 
-<h3 align="center">Smart lists that your AI can actually use.</h3>
+<h3 align="center">Smart lists and reminders that your AI can actually use.</h3>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
@@ -12,8 +12,8 @@
 
 <p align="center">
   <strong>LystBot is not another AI list app.</strong> There's no built-in AI. No chatbot. No "AI-powered suggestions."<br />
-  Instead, LystBot gives <em>your</em> AI - whether it's a personal agent on OpenClaw, a Custom GPT, or Claude - a direct line to your lists.<br />
-  <strong>Your AI controls the lists. The app is the window to the real world.</strong>
+  Instead, LystBot gives <em>your</em> AI - whether it's a personal agent on OpenClaw, a Custom GPT, or Claude - a direct line to your lists and reminders.<br />
+  <strong>Your AI controls the lists and reminders. The app is the window to the real world.</strong>
 </p>
 
 ---
@@ -63,7 +63,7 @@ Most "AI list apps" shove a chatbot inside the app. LystBot does the opposite: *
 You → talk to your AI → AI calls LystBot API → your phone updates instantly
 ```
 
-No new AI to learn. No prompts inside the app. Just connect your existing AI and it manages your groceries, packing lists, todos - anything.
+No new AI to learn. No prompts inside the app. Just connect your existing AI and it manages your groceries, packing lists, todos, reminders - anything.
 
 - 🤖 **"Add eggs to my shopping list" actually works** - from any AI you already use
 - 📱 **Your phone is the display** - your AI writes, you see it instantly
@@ -84,9 +84,11 @@ No new AI to learn. No prompts inside the app. Just connect your existing AI and
 
 🗂️ **Categories** - Structure lists into sections, move items between categories, keep uncategorized items in Other
 
+⏰ **Reminders** - Let your AI create, update, disable, and delete one-time or recurring reminders
+
 🔔 **Push Notifications** - Know when your AI or your family changes a list
 
-🌐 **Open API** - Full REST API so any AI agent can read, write, manage, and categorize your lists
+🌐 **Open API** - Full REST API so any AI agent can read, write, and manage lists, categories, and reminders
 
 <p align="center">
   <img src="./assets/app-screenshot-dashboard.png" alt="Dashboard" width="220" />
@@ -171,6 +173,15 @@ lystbot categories "Groceries"                 # List categories (incl. Other)
 lystbot category add "Groceries" "Fruits"      # Create a category
 lystbot add "Groceries" "Bananas" --category "Fruits"   # Add into a category
 lystbot move "Groceries" "Bananas" --category other      # Move to Other/uncategorized
+
+# Reminders
+lystbot reminders                                      # Show all reminders
+lystbot reminder <id>                                  # Show one reminder
+lystbot remind "Take vitamins" --at "2026-05-08 09:00" --timezone "Europe/Berlin"
+lystbot reminder-update <id> --title "Take supplements"
+lystbot reminder-update <id> --at "2026-05-09 09:00" --enabled
+lystbot reminder-update <id> --disabled
+lystbot reminder-delete <id> --yes
 
 # Sharing
 lystbot share "Groceries"                  # Generate a share code
@@ -260,6 +271,11 @@ Add the same config to your editor's MCP settings:
 | `delete_category` | Delete a category |
 | `reorder_categories` | Reorder categories |
 | `move_item` | Move an item to a category (or Other) |
+| `list_reminders` | Get all reminders |
+| `get_reminder` | Get one reminder |
+| `create_reminder` | Create a reminder |
+| `update_reminder` | Update a reminder |
+| `delete_reminder` | Delete a reminder |
 
 ---
 

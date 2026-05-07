@@ -1,6 +1,6 @@
 # LystBot CLI & MCP Server
 
-Smart lists that your AI can actually use.
+Smart lists and reminders that your AI can actually use.
 
 ## CLI
 
@@ -15,6 +15,15 @@ npx lystbot categories "Groceries"
 npx lystbot category add "Groceries" "Fruits"
 npx lystbot add "Groceries" "Bananas" --category "Fruits"
 npx lystbot move "Groceries" "Bananas" --category other
+
+# Reminders
+npx lystbot reminders
+npx lystbot reminder <id>
+npx lystbot remind "Take vitamins" --at "2026-05-08 09:00" --timezone "Europe/Berlin"
+npx lystbot reminder-update <id> --title "Take supplements"
+npx lystbot reminder-update <id> --at "2026-05-09 09:00" --enabled
+npx lystbot reminder-update <id> --disabled
+npx lystbot reminder-delete <id> --yes
 ```
 
 ## MCP Server (Claude Desktop, Cursor, Windsurf)
@@ -80,6 +89,11 @@ Add to `.cursor/mcp.json` or `.windsurf/mcp.json`:
 | `delete_category` | Delete a category |
 | `reorder_categories` | Reorder categories |
 | `move_item` | Move an item to a category (or Other) |
+| `list_reminders` | Get all reminders |
+| `get_reminder` | Get one reminder |
+| `create_reminder` | Create a reminder |
+| `update_reminder` | Update a reminder |
+| `delete_reminder` | Delete a reminder |
 
 ## Documentation
 
