@@ -16,12 +16,17 @@ test('parses documented German and English item prefixes', () => {
     ['3 bottles wine', { text: 'wine', quantity: 1, unit: '3 bottles' }],
     ['6er Pack Wasser', { text: 'Wasser', quantity: 1, unit: '6er Pack' }],
     ['6er-Pack Wasser', { text: 'Wasser', quantity: 1, unit: '6er Pack' }],
+    ['3 Bananen', { text: 'Bananen', quantity: 3, unit: null }],
+    ['3 bananas', { text: 'bananas', quantity: 3, unit: null }],
   ];
   for (const [input, expected] of cases) assert.deepEqual(parseItem(input), expected);
 });
 
 test('keeps plain text and existing batch separators', () => {
   assert.deepEqual(parseItem('Brot'), { text: 'Brot', quantity: 1, unit: null });
+  for (const input of ['0 Bananen', '100 Bananen', '3.5 Bananen', '3,5 Bananen']) {
+    assert.deepEqual(parseItem(input), { text: input, quantity: 1, unit: null });
+  }
   assert.deepEqual(normalizeItems('Milk, Eggs, Bread').map(item => item.text), ['Milk', 'Eggs', 'Bread']);
   assert.deepEqual(normalizeItems('Milch; Eier; Brot').map(item => item.text), ['Milch', 'Eier', 'Brot']);
   assert.deepEqual(normalizeItems('Milk, Eggs; Bread').map(item => item.text), ['Milk', 'Eggs', 'Bread']);

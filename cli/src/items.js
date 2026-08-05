@@ -21,6 +21,9 @@ function parseItem(input) {
   if ((match = value.match(englishContainer))) {
     return { text: match[3].trim(), quantity: 1, unit: `${match[1]} ${match[2].toLowerCase()}` };
   }
+  if ((match = value.match(/^([1-9]\d?)\s+(.+)$/))) {
+    return { text: match[2].trim(), quantity: Number(match[1]), unit: null };
+  }
   return { text: value, quantity: 1, unit: null };
 }
 
