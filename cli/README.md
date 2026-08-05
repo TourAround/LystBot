@@ -8,6 +8,8 @@ Smart lists and reminders that your AI can actually use.
 npx lystbot login <your-api-key>
 npx lystbot lists
 npx lystbot add "Groceries" "Milk, Eggs, Butter"
+npx lystbot add "Groceries" "250g Mehl; 3x Milch; 2 Flaschen Wein"
+npx lystbot add "Groceries" "Mehl" --quantity 2 --unit "500g"
 npx lystbot check "Groceries" "Milk"
 
 # Categories
@@ -25,6 +27,8 @@ npx lystbot reminder-update <id> --at "2026-05-09 09:00" --enabled
 npx lystbot reminder-update <id> --disabled
 npx lystbot reminder-delete <id> --yes
 ```
+
+Natural prefixes are stored as structured fields: `250g Mehl` becomes text `Mehl`, quantity `1`, unit `250g`; `3x Milch` becomes quantity `3`; and `2 Flaschen Wein` uses unit `2 Flaschen`. `--quantity` accepts integer counts from 1 to 99. Explicit `--quantity`/`--unit` flags only work for a single item.
 
 ## MCP Server (Claude Desktop, Cursor, Windsurf)
 
@@ -76,7 +80,7 @@ Add to `.cursor/mcp.json` or `.windsurf/mcp.json`:
 | `get_list` | Get a list with all items |
 | `create_list` | Create a new list |
 | `delete_list` | Delete a list |
-| `add_items` | Add items (comma-separated) |
+| `add_items` | Add natural-syntax strings or structured `{text, quantity?, unit?}` items |
 | `check_item` | Check off an item |
 | `uncheck_item` | Reopen a checked item |
 | `remove_item` | Delete an item |
@@ -94,6 +98,8 @@ Add to `.cursor/mcp.json` or `.windsurf/mcp.json`:
 | `create_reminder` | Create a reminder |
 | `update_reminder` | Update a reminder |
 | `delete_reminder` | Delete a reminder |
+
+For precise agent calls, `add_items` accepts structured input such as `[{"text":"Mehl","quantity":2,"unit":"500g"}]`. Weight is a `unit`, so `250g` means quantity `1` and unit `250g`, never quantity `250`.
 
 ## Documentation
 

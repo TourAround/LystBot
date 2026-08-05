@@ -1,13 +1,22 @@
 #!/usr/bin/env node
 
-const { Command } = require('commander');
+const { Command, InvalidArgumentError } = require('commander');
 const { randomUUID } = require('crypto');
 const readline = require('readline');
 const config = require('./config');
 const api = require('./api');
+const { normalizeItems } = require('./items');
 const pkg = require('../package.json');
 
 const program = new Command();
+
+function parseQuantity(value) {
+  const quantity = Number(value);
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+    throw new InvalidArgumentError('Quantity must be an integer from 1 to 99.');
+  }
+  return quantity;
+}
 
 program
   .name('lystbot')
@@ -570,31 +579,24 @@ categoryCmd
 // ── add ────────────────────────────────────────────────
 program
   .command('add <list> <items...>')
-  .description('Add items to a list (supports comma-separated)')
+  .description('Add items to a list (parses counts, units, and comma-separated batches)')
   .option('--category <category>', 'Add items to a category (name or ID)')
   .option('--create-category', 'Auto-create the category if it does not exist (only works with --category name)')
+  .option('--quantity <number>', 'Explicit item count from 1 to 99 (single item only)', parseQuantity)
+  .option('--unit <unit>', 'Explicit item unit, e.g. "500g" or "Packung" (single item only)')
   .action(async (listQuery, rawItems, options) => {
-    config.getApiKey();
-
-    // Smart parsing: each CLI argument is one item.
-    // Within a single argument, split on ", " (comma+space) for batch input.
-    // To include a literal comma+space in an item, use semicolons as separator instead.
-    // e.g. "Milch; Eier; Brot" or "Käse, Wurst, Senf" both work as batch.
-    // Single item with comma: pass as separate arg without comma+space pattern.
-    const items = rawItems
-      .flatMap(i => {
-        // If argument contains semicolons, use those as separators (commas stay literal)
-        if (i.includes(';')) return i.split(';');
-        // Otherwise split on ", " (comma followed by space)
-        return i.split(', ');
-      })
-      .map(i => i.trim())
-      .filter(Boolean);
-
-    if (!items.length) {
-      console.error('❌ No items to add.');
+    let items;
+    try {
+      items = normalizeItems(rawItems, {
+        ...(options.quantity !== undefined && { quantity: options.quantity }),
+        ...(options.unit !== undefined && { unit: options.unit }),
+      });
+    } catch (error) {
+      console.error(`❌ ${error.message}`);
       process.exit(1);
     }
+
+    config.getApiKey();
 
     // Try to find the list
     const listsRes = await api.request('GET', '/lists');
@@ -650,9 +652,7 @@ program
     for (let idx = 0; idx < items.length; idx++) {
       await api.request('POST', `/lists/${match.id}/items`, {
         id: randomUUID(),
-        text: items[idx],
-        quantity: 1,
-        unit: null,
+        ...items[idx],
         position: idx,
         category_id: categoryId,
       });
@@ -661,8 +661,8 @@ program
 
     const emoji = match.emoji || '📋';
     console.log(`➕ Added ${added} item${added === 1 ? '' : 's'} to ${emoji} ${match.title || match.name}`);
-    for (const text of items) {
-      console.log(`   • ${text}`);
+    for (const item of items) {
+      console.log(`   • ${item.text} (quantity: ${item.quantity}, unit: ${item.unit || 'none'})`);
     }
   });
 

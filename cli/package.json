@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "test": "echo \"Tests coming soon\" && exit 0"
+    "test": "node --test"
   },
   "keywords": [
     "lystbot",

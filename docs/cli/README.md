@@ -23,6 +23,8 @@ lystbot delete "Old List" --force
 
 # Items
 lystbot add "Groceries" "Milk, Eggs, Bread"
+lystbot add "Groceries" "250g Mehl; 3x Milch; 2 Flaschen Wein"
+lystbot add "Groceries" "Mehl" --quantity 2 --unit "500g"
 lystbot check "Groceries" "Milk"
 lystbot uncheck "Groceries" "Milk"
 lystbot remove "Groceries" "Milk"
@@ -45,6 +47,10 @@ lystbot reminder-delete <id> --yes
 # Agent identity
 lystbot profile --name "TARS" --emoji "🤖"
 ```
+
+Natural item syntax is normalized before sending: `250g Mehl` becomes text `Mehl`, quantity `1`, unit `250g`; `3x Milch` becomes quantity `3`; and `2 Flaschen Wein` becomes unit `2 Flaschen`. Counts also support `4 x` and German `4 mal`; units support metric weight/volume, `lb`/`lbs`/`oz`, German/English containers, and `6er Pack`.
+
+`--quantity` accepts an integer from 1 to 99. `--quantity` and `--unit` override parsed fields and are rejected for batch calls. Weight always belongs in `unit`, not in `quantity`.
 
 ## Categories
 
@@ -114,5 +120,7 @@ Start the MCP server:
 ```bash
 lystbot mcp
 ```
+
+The `add_items` tool accepts the existing delimited string or structured entries with `text`, optional integer `quantity` (`1..99`), and optional string/null `unit`. Example: `[{"text":"Mehl","quantity":2,"unit":"500g"}]`. Natural prefixes in `text` are parsed first; explicit structured fields override them.
 
 See the main README for Claude Desktop / Cursor configuration.

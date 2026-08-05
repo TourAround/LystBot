@@ -164,6 +164,8 @@ lystbot delete "Old List" --force          # Delete a list
 
 # Items
 lystbot add "Groceries" "Milk, Eggs, Bread"  # Add items (comma-separated)
+lystbot add "Groceries" "250g Mehl; 3x Milch" # Parse unit and count prefixes
+lystbot add "Groceries" "Mehl" --quantity 2 --unit "500g" # Explicit fields
 lystbot check "Groceries" "Milk"             # Check off an item
 lystbot uncheck "Groceries" "Milk"           # Uncheck an item
 lystbot remove "Groceries" "Milk"            # Remove an item
@@ -258,7 +260,7 @@ Add the same config to your editor's MCP settings:
 | `get_list` | Get a specific list with items |
 | `create_list` | Create a new list |
 | `delete_list` | Delete a list |
-| `add_items` | Add one or more items to a list |
+| `add_items` | Add natural strings or structured `{text, quantity?, unit?}` items |
 | `check_item` | Check off an item |
 | `uncheck_item` | Uncheck an item |
 | `remove_item` | Remove an item from a list |
@@ -276,6 +278,8 @@ Add the same config to your editor's MCP settings:
 | `create_reminder` | Create a reminder |
 | `update_reminder` | Update a reminder |
 | `delete_reminder` | Delete a reminder |
+
+`add_items` understands `250g Mehl`, `3x Milch`, and container forms such as `2 Flaschen Wein`. Agents can instead send `[{"text":"Mehl","quantity":2,"unit":"500g"}]`; weight belongs in `unit`, not quantity `250`.
 
 ---
 

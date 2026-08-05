@@ -3,6 +3,7 @@ const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio
 const { randomUUID } = require('crypto');
 const { z } = require('zod');
 const config = require('./config');
+const { normalizeItems } = require('./items');
 
 // --- API helper (non-exiting version for MCP) ---
 async function api(method, path, body = null) {
@@ -252,11 +253,19 @@ async function startMcpServer() {
     return { content: [{ type: 'text', text: `Deleted: ${match.emoji || '📋'} ${match.title}` }] };
   });
 
-  server.tool('add_items', 'Add one or more items to a list', {
+  server.tool('add_items', 'Add items with natural syntax or explicit quantity and unit fields', {
     list: z.string().describe('List name or ID'),
-    items: z.string().describe('Items to add, separated by comma+space or semicolon. Example: "Milk, Eggs, Butter"'),
+    items: z.union([
+      z.string().trim().min(1).describe('Items separated by comma+space or semicolon. Natural examples: "250g Mehl, 3x Milch".'),
+      z.array(z.object({
+        text: z.string().trim().min(1).describe('Item text; natural prefixes such as "250g Mehl" are parsed'),
+        quantity: z.number().int().min(1).max(99).optional().describe('Explicit item count, 1..99. Weight belongs in unit, not quantity.'),
+        unit: z.string().nullable().optional().describe('Explicit unit, e.g. "500g", "2 Flaschen", or null'),
+      })).min(1).describe('Structured items; explicit quantity/unit override values parsed from text'),
+    ]),
     category: z.string().optional().describe('Optional category name or ID. Use "other" to add uncategorized.'),
-  }, async ({ list: query, items: itemsStr, category }) => {
+  }, async ({ list: query, items: input, category }) => {
+    const items = normalizeItems(input);
     const all = await api('GET', '/lists');
     const match = findList(all.lists || all, query);
     if (!match) throw new Error(`List "${query}" not found`);
@@ -277,16 +286,15 @@ async function startMcpServer() {
       }
     }
 
-    const texts = itemsStr.split(/;\s*|,\s+/).map(s => s.trim()).filter(Boolean);
     const added = [];
 
-    for (const text of texts) {
+    for (const item of items) {
       const id = uuid();
-      await api('POST', `/lists/${match.id}/items`, { id, text, category_id: categoryId });
-      added.push(text);
+      await api('POST', `/lists/${match.id}/items`, { id, ...item, category_id: categoryId });
+      added.push(item);
     }
 
-    return { content: [{ type: 'text', text: `Added ${added.length} item(s) to ${match.emoji || '📋'} ${match.title}:\n${added.map(t => `  + ${t}`).join('\n')}` }] };
+    return { content: [{ type: 'text', text: `Added ${added.length} item(s) to ${match.emoji || '📋'} ${match.title}:\n${added.map(item => `  + ${item.text} (quantity: ${item.quantity}, unit: ${item.unit || 'none'})`).join('\n')}` }] };
   });
 
   server.tool('check_item', 'Check off (complete) an item', {
