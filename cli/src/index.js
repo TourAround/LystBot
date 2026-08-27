@@ -757,6 +757,96 @@ program
     console.log(`🗑️  Removed: ${item.text}`);
   });
 
+// ── attachments ────────────────────────────────────────
+
+async function resolveItem(listQuery, itemQuery) {
+  const { list, detail } = await api.resolveList(listQuery, { withItems: true });
+  const item = api.findItem(detail.items || [], itemQuery);
+  if (!item) {
+    const names = (detail.items || []).map(i => i.text).join(', ');
+    console.error(`❌ Item '${itemQuery}' not found in ${list.title || list.name}. Items: ${names || '(empty)'}`);
+    process.exit(1);
+  }
+  return { list, item };
+}
+
+function formatAttachment(a) {
+  const icon = a.type === 'image' ? '🖼️' : '🔗';
+  const label = a.title ? `${a.title} — ${a.url || a.thumbnail_path || ''}` : (a.url || a.thumbnail_path || '');
+  return `  ${icon} ${a.type}  ${label} [id: ${a.id}]`;
+}
+
+program
+  .command('attach-image <list> <item> <path>')
+  .description('Attach a local image file to an item')
+  .action(async (listQuery, itemQuery, filePath) => {
+    config.getApiKey();
+    // Read before resolving so a bad path fails without any network call.
+    let file;
+    try {
+      file = api.readImageFile(filePath);
+    } catch (err) {
+      console.error(`❌ ${err.message}`);
+      process.exit(1);
+    }
+    const { item } = await resolveItem(listQuery, itemQuery);
+    const attachment = await api.postImage(item.id, file).catch((err) => {
+      console.error(`❌ ${err.message}`);
+      process.exit(1);
+    });
+    console.log(`🖼️  Attached image to ${item.text} [id: ${attachment.id}]`);
+  });
+
+program
+  .command('attach-url <list> <item> <url> [title]')
+  .description('Attach a link to an item')
+  .action(async (listQuery, itemQuery, url, title) => {
+    config.getApiKey();
+    let normalized;
+    try {
+      normalized = api.normalizeUrl(url);
+    } catch (err) {
+      console.error(`❌ ${err.message}`);
+      process.exit(1);
+    }
+    const { item } = await resolveItem(listQuery, itemQuery);
+    const attachment = await api.addUrlAttachment(item.id, normalized, title);
+    console.log(`🔗 Attached link to ${item.text} [id: ${attachment.id}]`);
+  });
+
+program
+  .command('attachments <list> <item>')
+  .description('Show all attachments of an item')
+  .option('--json', 'Output as JSON')
+  .action(async (listQuery, itemQuery, options) => {
+    config.getApiKey();
+    const { item } = await resolveItem(listQuery, itemQuery);
+    const attachments = await api.listAttachments(item.id);
+
+    if (options.json) {
+      console.log(JSON.stringify(attachments, null, 2));
+      return;
+    }
+
+    if (!attachments.length) {
+      console.log(`📎 No attachments on ${item.text}`);
+      return;
+    }
+
+    console.log(`📎 Attachments of ${item.text}\n`);
+    for (const a of attachments) console.log(formatAttachment(a));
+    console.log(`\n  ${attachments.length} attachment${attachments.length === 1 ? '' : 's'}`);
+  });
+
+program
+  .command('detach <attachment-id>')
+  .description('Delete an attachment by its ID')
+  .action(async (attachmentId) => {
+    config.getApiKey();
+    await api.deleteAttachment(attachmentId);
+    console.log(`🗑️  Deleted attachment: ${attachmentId}`);
+  });
+
 // ── clear ──────────────────────────────────────────────
 program
   .command('clear <list>')

@@ -30,6 +30,12 @@ lystbot uncheck "Groceries" "Milk"
 lystbot remove "Groceries" "Milk"
 lystbot clear "Groceries" --force
 
+# Attachments
+lystbot attach-image "Groceries" "Milk" ./photo.jpg
+lystbot attach-url "Groceries" "Milk" "https://example.com" "Recipe"
+lystbot attachments "Groceries" "Milk"
+lystbot detach <attachment-id>
+
 # Sharing
 lystbot share "Groceries"
 lystbot join ABC123
@@ -68,6 +74,31 @@ lystbot add "Groceries" "Bananas" --category "Fruits"
 lystbot move "Groceries" "Bananas" --category "Vegetables"
 lystbot move "Groceries" "Bananas" --category other
 ```
+
+## Attachments
+
+Items can carry images and links.
+
+```bash
+# Upload a local image file
+lystbot attach-image "Groceries" "Milk" ./photo.jpg
+
+# Attach a link (optional title)
+lystbot attach-url "Groceries" "Milk" "https://example.com/recipe" "Recipe"
+
+# Show all attachments of an item
+lystbot attachments "Groceries" "Milk"
+lystbot attachments "Groceries" "Milk" --json
+
+# Delete an attachment by its ID
+lystbot detach 0f3a1c9e-...
+```
+
+Notes:
+
+- `attach-image` reads the file locally first, so a wrong path fails before any API call.
+- `attach-url` only accepts `http` and `https` URLs.
+- Attachment IDs are printed by `attach-image`, `attach-url`, and `attachments`.
 
 ## Reminders
 
@@ -120,6 +151,8 @@ Start the MCP server:
 ```bash
 lystbot mcp
 ```
+
+Attachment tools: `add_item_image` (either `image_path` for a local file, or `image_base64` plus `mime_type` and `filename`), `add_item_url`, `list_item_attachments`, and `delete_item_attachment`.
 
 The `add_items` tool accepts the existing delimited string or structured entries with `text`, optional integer `quantity` (`1..99`), and optional string/null `unit`. Example: `[{"text":"Mehl","quantity":2,"unit":"500g"}]`. Natural prefixes in `text` are parsed first; explicit structured fields override them.
 

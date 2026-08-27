@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const config = require('./config');
 
 async function request(method, path, body = null) {
@@ -82,6 +84,77 @@ async function rawRequest(method, path, body = null, extraHeaders = {}) {
   }
 
   return data;
+}
+
+// ── Attachments ────────────────────────────────────────
+
+const IMAGE_MIME = {
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif', '.webp': 'image/webp', '.heic': 'image/heic',
+};
+
+// Read a local image into {buffer, filename, mimeType}. Throws on unreadable files.
+function readImageFile(filePath) {
+  let buffer;
+  try {
+    buffer = fs.readFileSync(filePath);
+  } catch (err) {
+    const reason = err.code === 'ENOENT' ? 'file not found'
+      : err.code === 'EISDIR' ? 'is a directory'
+      : err.message;
+    throw new Error(`Cannot read image '${filePath}': ${reason}`);
+  }
+  if (buffer.length === 0) throw new Error(`Cannot read image '${filePath}': file is empty`);
+  const mimeType = IMAGE_MIME[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
+  return { buffer, filename: path.basename(filePath), mimeType };
+}
+
+// Validate + normalize an attachment URL. Throws on anything that isn't http(s).
+function normalizeUrl(url) {
+  const trimmed = String(url ?? '').trim();
+  let parsed;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    throw new Error(`Invalid URL: '${trimmed}'`);
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new Error(`Invalid URL: '${trimmed}' (only http and https are supported)`);
+  }
+  return trimmed;
+}
+
+// Multipart image upload. Throws on failure (MCP uses this directly).
+async function postImage(itemId, { buffer, filename, mimeType }) {
+  const form = new FormData();
+  // No manual Content-Type: fetch sets the multipart boundary.
+  form.append('file', new Blob([buffer], { type: mimeType }), filename);
+
+  const headers = {};
+  const cfg = config.read();
+  if (cfg && cfg.apiKey) headers['Authorization'] = `Bearer ${cfg.apiKey}`;
+
+  const res = await fetch(`${config.getBaseUrl()}/items/${itemId}/attachments/images`, {
+    method: 'POST', headers, body: form,
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data?.error?.message || data?.message || `HTTP ${res.status} ${res.statusText}`);
+  }
+  return data;
+}
+
+async function addUrlAttachment(itemId, url, title = null) {
+  return request('POST', `/items/${itemId}/attachments/urls`, { url, title: title || null });
+}
+
+async function listAttachments(itemId) {
+  const res = await request('GET', `/items/${itemId}/attachments`);
+  return res?.attachments || res || [];
+}
+
+async function deleteAttachment(attachmentId) {
+  return request('DELETE', `/attachments/${attachmentId}`);
 }
 
 // Fuzzy match: find a list by name or ID from an array of lists
@@ -177,4 +250,7 @@ function autoEmoji(name) {
   return '📋';
 }
 
-module.exports = { request, rawRequest, findList, findItem, findCategory, resolveList, autoEmoji };
+module.exports = {
+  request, rawRequest, findList, findItem, findCategory, resolveList, autoEmoji,
+  readImageFile, normalizeUrl, postImage, addUrlAttachment, listAttachments, deleteAttachment,
+};

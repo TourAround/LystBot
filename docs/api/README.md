@@ -291,6 +291,84 @@ curl -X DELETE https://lystbot.com/api/v1/lists/LIST_ID/items/checked \
 
 ---
 
+## Attachments
+
+Items can carry image and link attachments. An attachment looks like:
+
+```json
+{
+  "id": "ATTACHMENT_ID",
+  "type": "image",
+  "url": "https://lystbot.com/api/v1/attachments/ATTACHMENT_ID",
+  "title": null,
+  "thumbnail_path": "https://lystbot.com/api/v1/attachments/ATTACHMENT_ID/thumbnail",
+  "mime_type": "image/jpeg"
+}
+```
+
+### `POST /items/{itemId}/attachments/images`
+
+Upload an image as `multipart/form-data` with a single `file` field. Do not set `Content-Type` manually; the boundary must come from the client.
+
+```bash
+curl -X POST https://lystbot.com/api/v1/items/ITEM_ID/attachments/images \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "file=@photo.jpg"
+```
+
+Responds `201` with the attachment object.
+
+### `POST /items/{itemId}/attachments/urls`
+
+```bash
+curl -X POST https://lystbot.com/api/v1/items/ITEM_ID/attachments/urls \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com/recipe", "title": "Recipe"}'
+```
+
+| Field | Type | Required |
+|-------|------|----------|
+| `url` | string | yes |
+| `title` | string or null | no |
+
+Responds `201` with the attachment object.
+
+### `GET /items/{itemId}/attachments`
+
+```bash
+curl https://lystbot.com/api/v1/items/ITEM_ID/attachments \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json
+{
+  "attachments": [
+    { "id": "...", "type": "image", "url": "...", "title": null, "thumbnail_path": "...", "mime_type": "image/jpeg" },
+    { "id": "...", "type": "url", "url": "https://example.com/recipe", "title": "Recipe", "thumbnail_path": null, "mime_type": null }
+  ]
+}
+```
+
+### `GET /attachments/{attachmentId}` and `GET /attachments/{attachmentId}/thumbnail`
+
+Return the raw image bytes (not JSON). Used by the app for display.
+
+### `DELETE /attachments/{attachmentId}`
+
+```bash
+curl -X DELETE https://lystbot.com/api/v1/attachments/ATTACHMENT_ID \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json
+{
+  "success": true
+}
+```
+
+---
+
 ## Categories
 
 Categories let you structure a list into sections. Items without a `category_id` belong to **Other** / uncategorized.

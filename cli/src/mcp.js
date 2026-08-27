@@ -4,6 +4,8 @@ const { randomUUID } = require('crypto');
 const { z } = require('zod');
 const config = require('./config');
 const { normalizeItems } = require('./items');
+// Only the throwing helpers - the rest of api.js exits the process on error.
+const { readImageFile, normalizeUrl, postImage } = require('./api');
 
 // --- API helper (non-exiting version for MCP) ---
 async function api(method, path, body = null) {
@@ -507,6 +509,84 @@ async function startMcpServer() {
 
     await api('PUT', `/lists/${match.id}/items/${found.id}`, { category_id: categoryId });
     return { content: [{ type: 'text', text: `Moved: ${found.text} → ${categoryId ? category : 'Other'}` }] };
+  });
+
+  // --- Attachments ---
+
+  async function resolveItem(listQuery, itemQuery) {
+    const all = await api('GET', '/lists');
+    const match = findList(all.lists || all, listQuery);
+    if (!match) throw new Error(`List "${listQuery}" not found`);
+    const detail = await api('GET', `/lists/${match.id}`);
+    const items = detail.items || [];
+    const lower = itemQuery.toLowerCase();
+    const found = items.find(i => i.text.toLowerCase() === lower)
+      || items.find(i => i.text.toLowerCase().includes(lower));
+    if (!found) throw new Error(`Item "${itemQuery}" not found in ${match.title}`);
+    return found;
+  }
+
+  function formatAttachment(a) {
+    const icon = a.type === 'image' ? '🖼️' : '🔗';
+    const label = a.title ? `${a.title} — ${a.url || a.thumbnail_path || ''}` : (a.url || a.thumbnail_path || '');
+    return `${icon} ${a.type}  ${label} [id: ${a.id}]`;
+  }
+
+  server.tool('add_item_image', 'Attach an image to an item, either from a local file path or from raw base64 data', {
+    list: z.string().describe('List name or ID'),
+    item: z.string().describe('Item text (fuzzy match)'),
+    image_path: z.string().optional().describe('Path to a local image file (preferred)'),
+    image_base64: z.string().optional().describe('Base64-encoded image data, without any data-URI prefix'),
+    mime_type: z.string().optional().describe('MIME type for image_base64, e.g. image/png'),
+    filename: z.string().optional().describe('File name for image_base64, e.g. photo.png'),
+  }, async ({ list: query, item: itemQuery, image_path, image_base64, mime_type, filename }) => {
+    if (!!image_path === !!image_base64) {
+      throw new Error('Provide exactly one of image_path or image_base64');
+    }
+    const file = image_path
+      ? readImageFile(image_path)
+      : {
+          buffer: Buffer.from(image_base64, 'base64'),
+          filename: filename || 'image.png',
+          mimeType: mime_type || 'image/png',
+        };
+    if (file.buffer.length === 0) throw new Error('Image data is empty');
+
+    const found = await resolveItem(query, itemQuery);
+    const attachment = await postImage(found.id, file);
+    return { content: [{ type: 'text', text: `Attached image to ${found.text}: ${formatAttachment(attachment)}` }] };
+  });
+
+  server.tool('add_item_url', 'Attach a link to an item', {
+    list: z.string().describe('List name or ID'),
+    item: z.string().describe('Item text (fuzzy match)'),
+    url: z.string().describe('The http(s) URL to attach'),
+    title: z.string().optional().describe('Optional link title'),
+  }, async ({ list: query, item: itemQuery, url, title }) => {
+    const normalized = normalizeUrl(url);
+    const found = await resolveItem(query, itemQuery);
+    const attachment = await api('POST', `/items/${found.id}/attachments/urls`, { url: normalized, title: title || null });
+    return { content: [{ type: 'text', text: `Attached link to ${found.text}: ${formatAttachment(attachment)}` }] };
+  });
+
+  server.tool('list_item_attachments', 'List all attachments of an item', {
+    list: z.string().describe('List name or ID'),
+    item: z.string().describe('Item text (fuzzy match)'),
+  }, async ({ list: query, item: itemQuery }) => {
+    const found = await resolveItem(query, itemQuery);
+    const data = await api('GET', `/items/${found.id}/attachments`);
+    const attachments = data?.attachments || data || [];
+    const text = attachments.length === 0
+      ? `No attachments on ${found.text}.`
+      : attachments.map(formatAttachment).join('\n');
+    return { content: [{ type: 'text', text }] };
+  });
+
+  server.tool('delete_item_attachment', 'Delete an attachment by its ID', {
+    attachment_id: z.string().describe('Attachment ID'),
+  }, async ({ attachment_id }) => {
+    await api('DELETE', `/attachments/${attachment_id}`);
+    return { content: [{ type: 'text', text: `Deleted attachment: ${attachment_id}` }] };
   });
 
   // Connect via stdio

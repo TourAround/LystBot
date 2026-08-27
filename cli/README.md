@@ -18,6 +18,12 @@ npx lystbot category add "Groceries" "Fruits"
 npx lystbot add "Groceries" "Bananas" --category "Fruits"
 npx lystbot move "Groceries" "Bananas" --category other
 
+# Attachments
+npx lystbot attach-image "Groceries" "Milk" ./photo.jpg
+npx lystbot attach-url "Groceries" "Milk" "https://example.com" "Recipe"
+npx lystbot attachments "Groceries" "Milk"
+npx lystbot detach <attachment-id>
+
 # Reminders
 npx lystbot reminders
 npx lystbot reminder <id>
@@ -93,6 +99,10 @@ Add to `.cursor/mcp.json` or `.windsurf/mcp.json`:
 | `delete_category` | Delete a category |
 | `reorder_categories` | Reorder categories |
 | `move_item` | Move an item to a category (or Other) |
+| `add_item_image` | Attach an image to an item (`image_path`, or `image_base64` + `mime_type` + `filename`) |
+| `add_item_url` | Attach an http(s) link to an item |
+| `list_item_attachments` | List all attachments of an item |
+| `delete_item_attachment` | Delete an attachment by ID |
 | `list_reminders` | Get all reminders |
 | `get_reminder` | Get one reminder |
 | `create_reminder` | Create a reminder |

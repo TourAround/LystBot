@@ -84,6 +84,8 @@ No new AI to learn. No prompts inside the app. Just connect your existing AI and
 
 🗂️ **Categories** - Structure lists into sections, move items between categories, keep uncategorized items in Other
 
+📎 **Attachments** - Attach images and links to items, from the app, the CLI, or an MCP agent
+
 ⏰ **Reminders** - Let your AI create, update, disable, and delete one-time or recurring reminders
 
 🔔 **Push Notifications** - Know when your AI or your family changes a list
@@ -169,6 +171,12 @@ lystbot add "Groceries" "Mehl" --quantity 2 --unit "500g" # Explicit fields
 lystbot check "Groceries" "Milk"             # Check off an item
 lystbot uncheck "Groceries" "Milk"           # Uncheck an item
 lystbot remove "Groceries" "Milk"            # Remove an item
+
+# Attachments
+lystbot attach-image "Groceries" "Milk" ./photo.jpg     # Attach a local image
+lystbot attach-url "Groceries" "Milk" "https://example.com" "Recipe"  # Attach a link
+lystbot attachments "Groceries" "Milk"                  # Show attachments
+lystbot detach <attachment-id>                          # Delete an attachment
 
 # Categories
 lystbot categories "Groceries"                 # List categories (incl. Other)
@@ -273,6 +281,10 @@ Add the same config to your editor's MCP settings:
 | `delete_category` | Delete a category |
 | `reorder_categories` | Reorder categories |
 | `move_item` | Move an item to a category (or Other) |
+| `add_item_image` | Attach an image to an item (local path or base64) |
+| `add_item_url` | Attach a link to an item |
+| `list_item_attachments` | List all attachments of an item |
+| `delete_item_attachment` | Delete an attachment by ID |
 | `list_reminders` | Get all reminders |
 | `get_reminder` | Get one reminder |
 | `create_reminder` | Create a reminder |
