@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "cli"
   },
-  "version": "0.3.8",
+  "version": "0.4.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "lystbot",
-      "version": "0.3.8",
+      "version": "0.4.0",
       "transport": {
         "type": "stdio"
       },
@@ -45,6 +45,11 @@
     { "name": "get_reminder", "description": "Get one reminder" },
     { "name": "create_reminder", "description": "Create a reminder" },
     { "name": "update_reminder", "description": "Update a reminder" },
-    { "name": "delete_reminder", "description": "Delete a reminder" }
+    { "name": "delete_reminder", "description": "Delete a reminder" },
+
+    { "name": "add_item_image", "description": "Attach an image to an item from a local file path or base64 data" },
+    { "name": "add_item_url", "description": "Attach a link to an item" },
+    { "name": "list_item_attachments", "description": "List all attachments of an item" },
+    { "name": "delete_item_attachment", "description": "Delete an attachment by its ID" }
   ]
 }
