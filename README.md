@@ -12,7 +12,7 @@
 
 <p align="center">
   <strong>LystBot is not another AI list app.</strong> There's no built-in AI. No chatbot. No "AI-powered suggestions."<br />
-  Instead, LystBot gives <em>your</em> AI - whether it's a personal agent on OpenClaw, a Custom GPT, or Claude - a direct line to your lists and reminders.<br />
+  Instead, LystBot gives <em>your</em> AI - whether it's OpenClaw, Hermes, Claude Code, ChatGPT, Copilot, Grok Bot, or another agent - a direct line to your lists and reminders.<br />
   <strong>Your AI controls the lists and reminders. The app is the window to the real world.</strong>
 </p>
 
@@ -111,6 +111,7 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 | Agent | Provider | Integration |
 |-------|----------|-------------|
 | **OpenClaw** | OpenClaw | **CLI** (`npx lystbot`) |
+| **Hermes** | [Nous Research](https://hermes-agent.nousresearch.com/) | CLI or REST API |
 | Devin | Cognition AI | CLI or REST API |
 | Aider | Open Source | CLI |
 | OpenCode | Open Source | CLI or MCP Server |

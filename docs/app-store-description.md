@@ -22,7 +22,7 @@ LystBot ist eine Listen-App, in der dein KI-Agent nicht zuschaut, sondern mitarb
 
 **Dein Agent wohnt schon da, wo LystBot andockt**
 
-LystBot spricht die Sprachen, die Agenten verstehen: REST API, CLI und MCP. Damit funktioniert es mit ChatGPT, Claude Code, Codex, OpenClaw, Grok Bot, Cursor, Windsurf und allem anderen, das eine API aufrufen kann. Kein neues Ökosystem lernen. Dein Agent arbeitet dort weiter, wo er ohnehin lebt.
+LystBot spricht die Sprachen, die Agenten verstehen: REST API, CLI und MCP. Damit funktioniert es mit OpenClaw, Hermes, Claude Code, ChatGPT, Copilot, Grok Bot und allem anderen, das eine API aufrufen kann. Kein neues Ökosystem lernen. Dein Agent arbeitet dort weiter, wo er ohnehin lebt.
 
 **Für Menschen genauso gut wie für Maschinen**
 
@@ -50,7 +50,7 @@ Now it can.
 
 LystBot is a list app where AI agents are first-class participants, not a chat window you copy things out of. Give your agent an API key and it manages your lists directly: adds items, checks them off, builds an entire packing list while you're still picking dates. You tell it what you need. It's on your phone before you've locked the screen.
 
-Tell Claude Code to stock the grocery list for the week. Ask ChatGPT for a camping checklist and watch it appear, item by item. Let OpenClaw tidy your to-dos overnight. Your agent works where it already lives: OpenClaw, Claude Code, ChatGPT, Codex, Grok, Cursor, Windsurf, and anything else that speaks REST or MCP. The app simply shows what happened, live.
+Tell Claude Code to stock the grocery list for the week. Ask ChatGPT for a camping checklist and watch it appear, item by item. Let OpenClaw tidy your to-dos overnight. Your agent works where it already lives: OpenClaw, Hermes, Claude Code, ChatGPT, Copilot, Grok Bot, and anything else that speaks REST or MCP. The app simply shows what happened, live.
 
 **How your agent connects**
 
