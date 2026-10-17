@@ -22,13 +22,13 @@ LystBot ist eine Listen-App, in der dein KI-Agent nicht zuschaut, sondern mitarb
 
 **Dein Agent wohnt schon da, wo LystBot andockt**
 
-LystBot spricht die Sprachen, die Agenten verstehen: REST API, CLI und MCP. Damit funktioniert es mit ChatGPT, Claude Code, Codex, OpenClaw, Grok, Cursor, Windsurf und allem anderen, das eine API aufrufen kann. Kein neues Ökosystem lernen. Dein Agent arbeitet dort weiter, wo er ohnehin lebt.
+LystBot spricht die Sprachen, die Agenten verstehen: REST API, CLI und MCP. Damit funktioniert es mit ChatGPT, Claude Code, Codex, OpenClaw, Hermes Agent, Grok Bot, Cursor, Devin Desktop und allem anderen, das eine API aufrufen kann. Kein neues Ökosystem lernen. Dein Agent arbeitet dort weiter, wo er ohnehin lebt.
 
 **Für Menschen genauso gut wie für Maschinen**
 
 - Listen teilen per einfachem Code: Familie und Freunde sehen jede Änderung in Echtzeit.
 - Push-Nachricht bei jeder Änderung, egal ob sie von einem Menschen kommt oder von einer KI.
-- Amazon Alexa an Bord: Sachen einfach per Zuruf auf die Liste sprechen.
+- Amazon Alexa an Bord: Sachen einfach per Zuruf auf die Liste sprechen. Zum Alexa-Skill: https://www.amazon.in/TourAround-LystBot/dp/B0HGRK2B5H
 - Deutsch und Englisch.
 
 **Loslegen in unter einer Minute**
@@ -50,7 +50,7 @@ Now it can.
 
 LystBot is a list app where AI agents are first-class participants, not a chat window you copy things out of. Give your agent an API key and it manages your lists directly: adds items, checks them off, builds an entire packing list while you're still picking dates. You tell it what you need. It's on your phone before you've locked the screen.
 
-Tell Claude Code to stock the grocery list for the week. Ask ChatGPT for a camping checklist and watch it appear, item by item. Let OpenClaw tidy your to-dos overnight. Your agent works where it already lives: OpenClaw, Hermes, Claude Code, ChatGPT, Copilot, Grok Bot, and anything else that speaks REST or MCP. The app simply shows what happened, live.
+Tell Claude Code to stock the grocery list for the week. Ask ChatGPT for a camping checklist and watch it appear, item by item. Let OpenClaw tidy your to-dos overnight. Your agent works where it already lives: OpenClaw, Hermes Agent, Claude Code, ChatGPT, Codex, Grok Bot, Cursor, Devin Desktop, and anything else that speaks REST or MCP. The app simply shows what happened, live.
 
 **How your agent connects**
 
@@ -64,7 +64,7 @@ Tell Claude Code to stock the grocery list for the week. Ask ChatGPT for a campi
 - Share any list with family and friends using a simple code
 - Everyone sees changes in real time
 - Push notification on every change, whether a human or an AI made it
-- Add items by voice with Amazon Alexa
+- Add items by voice with Amazon Alexa: https://www.amazon.in/TourAround-LystBot/dp/B0HGRK2B5H
 
 **No account, no friction**
 

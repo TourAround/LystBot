@@ -40,9 +40,9 @@ There are three ways to connect:
 
 | Method | Best for | Setup time |
 |--------|----------|------------|
-| CLI | OpenClaw, personal agents, scripts, automation | 1 min |
-| MCP server | Claude Desktop, Cursor, Windsurf, Cline | 2 min |
-| REST API | ChatGPT Actions, custom agents, Home Assistant | 5 min |
+| CLI | OpenClaw, Grok Bot, personal agents, scripts, automation | 1 min |
+| MCP server | Claude Desktop, Claude Code, Codex, Cursor, Devin Desktop | 2 min |
+| REST API | ChatGPT Actions, Copilot Studio, custom agents, Home Assistant | 5 min |
 
 ### 3. That's it
 
@@ -102,12 +102,14 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 
 | Agent | Provider | Integration |
 |-------|----------|-------------|
-| OpenClaw | OpenClaw | CLI (`npx lystbot`) |
-| Devin | Cognition AI | CLI or REST API |
+| OpenClaw | OpenClaw | CLI (`npx lystbot`) or MCP Server |
+| Hermes Agent | Nous Research | MCP Server |
+| Grok Bot | xAI | CLI on the Bot's cloud computer |
+| Devin | Cognition | CLI or REST API |
 | Aider | Open Source | CLI |
 | OpenCode | Open Source | CLI or MCP Server |
 | AutoGPT | Open Source | REST API |
-| CrewAI | Open Source | REST API |
+| CrewAI | Open Source | REST API or MCP Server |
 | Manus AI | Manus | REST API |
 
 ### Coding agents & IDEs
@@ -116,9 +118,12 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 |-------|----------|-------------|
 | Claude Desktop | Anthropic | MCP Server ([setup below](#claude-desktop)) |
 | Claude Code | Anthropic | MCP Server ([setup below](#claude-code)) |
+| Codex | OpenAI | MCP Server ([setup below](#codex--grok-build)) |
 | Cursor | Anysphere | MCP Server |
-| Windsurf | Cognition | MCP Server |
-| GitHub Copilot | Microsoft | MCP Server |
+| Devin Desktop (formerly Windsurf) | Cognition | MCP Server |
+| GitHub Copilot | GitHub | MCP Server |
+| Grok Build | xAI | MCP Server ([setup below](#codex--grok-build)) |
+| Antigravity | Google | MCP Server |
 | Cline | Open Source | MCP Server |
 
 ### Voice assistants & chat AI
@@ -126,11 +131,11 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 | Agent | Provider | Integration |
 |-------|----------|-------------|
 | ChatGPT | OpenAI | Custom GPT with OpenAPI Actions |
-| Google Gemini | Google | Gemini Extensions via REST API |
-| Microsoft Copilot | Microsoft | Copilot Plugin with OpenAPI |
-| Grok | xAI | REST API |
+| Google Gemini | Google | Gemini API function calling with the REST API |
+| Microsoft Copilot | Microsoft | Copilot Studio agent with a REST API tool (OpenAPI) |
+| Grok | xAI | xAI API function calling with the REST API |
 | Siri / Apple Intelligence | Apple | Apple Shortcuts with REST API |
-| Amazon Alexa | Amazon | Custom Alexa Skill with REST API |
+| Amazon Alexa | Amazon | [LystBot Alexa skill](https://www.amazon.in/TourAround-LystBot/dp/B0HGRK2B5H) |
 
 > Don't see your agent? If it can call an API, it can use LystBot. Check the [API docs](./docs/api/).
 
@@ -201,7 +206,7 @@ lystbot profile --name "TARS" --emoji "🤖" # Set your bot's display name
 
 ## 🔌 MCP Server
 
-The CLI includes an [MCP](https://modelcontextprotocol.io) server. It works with Claude Desktop, Claude Code, Cursor, Windsurf, Cline and any other MCP client.
+The CLI includes an [MCP](https://modelcontextprotocol.io) server. It runs locally over stdio, so it works with Claude Desktop, Claude Code, Codex, Cursor, Devin Desktop, Grok Build, Antigravity, Cline and any other MCP client that can start a local server.
 
 Log in first. Every setup below needs this:
 
@@ -237,9 +242,17 @@ claude mcp add lystbot -- npx lystbot mcp
 
 Claude Code can now manage your lists.
 
-### Cursor / Windsurf / Cline
+### Codex / Grok Build
 
-Add the same config to your editor's MCP settings:
+```bash
+codex mcp add lystbot -- npx lystbot mcp   # Codex
+grok mcp add lystbot -- npx lystbot mcp    # Grok Build
+```
+
+<a id="cursor--windsurf--cline"></a>
+### Cursor / Devin Desktop / Antigravity / Cline
+
+Add the same config to the tool's MCP settings. For Cursor that's `.cursor/mcp.json`, for Devin Desktop `~/.config/devin/mcp_config.json` and for Antigravity `~/.gemini/config/mcp_config.json`. Cline has its own MCP settings screen.
 
 ```json
 {

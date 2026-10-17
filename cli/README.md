@@ -36,7 +36,7 @@ npx lystbot reminder-delete <id> --yes
 
 The CLI turns natural prefixes into structured fields. `250g Mehl` becomes text `Mehl` with quantity `1` and unit `250g`. `3x Milch` and `3 Bananen` get quantity `3`. `2 Flaschen Wein` gets unit `2 Flaschen`. Separate items with `, ` or `;`. `--quantity` takes a whole number from 1 to 99, and `--quantity` and `--unit` only work when you add a single item.
 
-## MCP server (Claude Desktop, Cursor, Windsurf)
+## MCP server (Claude Desktop, Cursor, Devin Desktop)
 
 The CLI includes an MCP server. Add it to your AI tool:
 
@@ -55,9 +55,9 @@ Add this to `~/Library/Application Support/Claude/claude_desktop_config.json` (m
 }
 ```
 
-### Cursor / Windsurf
+### Cursor / Devin Desktop
 
-Add this to `.cursor/mcp.json` (Cursor) or `~/.codeium/windsurf/mcp_config.json` (Windsurf):
+Add this to `.cursor/mcp.json` (Cursor) or `~/.config/devin/mcp_config.json` (Devin Desktop, formerly Windsurf):
 
 ```json
 {
