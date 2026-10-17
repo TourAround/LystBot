@@ -135,7 +135,7 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 | Microsoft Copilot | Microsoft | Copilot Studio agent with a REST API tool (OpenAPI) |
 | Grok | xAI | xAI API function calling with the REST API |
 | Siri / Apple Intelligence | Apple | Apple Shortcuts with REST API |
-| Amazon Alexa | Amazon | [LystBot Alexa skill](https://www.amazon.in/TourAround-LystBot/dp/B0HGRK2B5H) |
+| Amazon Alexa | Amazon | [LystBot Alexa skill](https://www.amazon.de/dp/B0HGRK2B5H) |
 
 > Don't see your agent? If it can call an API, it can use LystBot. Check the [API docs](./docs/api/).
 

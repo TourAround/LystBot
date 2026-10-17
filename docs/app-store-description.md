@@ -28,7 +28,7 @@ LystBot spricht die Sprachen, die Agenten verstehen: REST API, CLI und MCP. Dami
 
 - Listen teilen per einfachem Code: Familie und Freunde sehen jede Änderung in Echtzeit.
 - Push-Nachricht bei jeder Änderung, egal ob sie von einem Menschen kommt oder von einer KI.
-- Amazon Alexa an Bord: Sachen einfach per Zuruf auf die Liste sprechen. Zum Alexa-Skill: https://www.amazon.in/TourAround-LystBot/dp/B0HGRK2B5H
+- Amazon Alexa an Bord: Sachen einfach per Zuruf auf die Liste sprechen. Zum Alexa-Skill: https://www.amazon.de/dp/B0HGRK2B5H
 - Deutsch und Englisch.
 
 **Loslegen in unter einer Minute**
@@ -64,7 +64,7 @@ Tell Claude Code to stock the grocery list for the week. Ask ChatGPT for a campi
 - Share any list with family and friends using a simple code
 - Everyone sees changes in real time
 - Push notification on every change, whether a human or an AI made it
-- Add items by voice with Amazon Alexa: https://www.amazon.in/TourAround-LystBot/dp/B0HGRK2B5H
+- Add items by voice with Amazon Alexa: https://www.amazon.de/dp/B0HGRK2B5H
 
 **No account, no friction**
 
