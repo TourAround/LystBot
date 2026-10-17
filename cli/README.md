@@ -1,4 +1,4 @@
-# LystBot CLI & MCP Server
+# LystBot CLI & MCP server
 
 Smart lists and reminders that your AI can actually use.
 
@@ -34,15 +34,15 @@ npx lystbot reminder-update <id> --disabled
 npx lystbot reminder-delete <id> --yes
 ```
 
-Natural prefixes are stored as structured fields: `250g Mehl` becomes text `Mehl`, quantity `1`, unit `250g`; `3x Milch` or `3 Bananen` becomes quantity `3`; and `2 Flaschen Wein` uses unit `2 Flaschen`. `--quantity` accepts integer counts from 1 to 99. Explicit `--quantity`/`--unit` flags only work for a single item.
+The CLI turns natural prefixes into structured fields. `250g Mehl` becomes text `Mehl` with quantity `1` and unit `250g`. `3x Milch` and `3 Bananen` get quantity `3`. `2 Flaschen Wein` gets unit `2 Flaschen`. Separate items with `, ` or `;`. `--quantity` takes a whole number from 1 to 99, and `--quantity` and `--unit` only work when you add a single item.
 
-## MCP Server (Claude Desktop, Cursor, Windsurf)
+## MCP server (Claude Desktop, Cursor, Windsurf)
 
-LystBot includes a built-in MCP server. Add it to your AI tool:
+The CLI includes an MCP server. Add it to your AI tool:
 
 ### Claude Desktop
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Add this to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 
 ```json
 {
@@ -57,7 +57,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ### Cursor / Windsurf
 
-Add to `.cursor/mcp.json` or `.windsurf/mcp.json`:
+Add this to `.cursor/mcp.json` (Cursor) or `~/.codeium/windsurf/mcp_config.json` (Windsurf):
 
 ```json
 {
@@ -73,12 +73,12 @@ Add to `.cursor/mcp.json` or `.windsurf/mcp.json`:
 ### Setup
 
 1. Install the app: [lystbot.com](https://lystbot.com)
-2. Copy your API key from Settings
+2. Copy your API key from Settings → AI Agents
 3. Run `npx lystbot login <your-api-key>`
 4. Add the MCP config above
 5. Ask Claude: "What's on my grocery list?"
 
-### Available Tools
+### Available tools
 
 | Tool | Description |
 |------|-------------|
@@ -109,8 +109,8 @@ Add to `.cursor/mcp.json` or `.windsurf/mcp.json`:
 | `update_reminder` | Update a reminder |
 | `delete_reminder` | Delete a reminder |
 
-Natural strings such as `3 Bananen` become quantity `3` with unit null. For precise agent calls, `add_items` accepts structured input such as `[{"text":"Mehl","quantity":2,"unit":"500g"}]`. Weight is a `unit`, so `250g` means quantity `1` and unit `250g`, never quantity `250`.
+Natural strings such as `3 Bananen` become quantity `3` with unit `null`. For precise calls, `add_items` also accepts structured input such as `[{"text":"Mehl","quantity":2,"unit":"500g"}]`. Weight is a unit: `250g` means quantity `1` and unit `250g`, never quantity `250`.
 
 ## Documentation
 
-Full docs at [lystbot.com](https://lystbot.com) and [docs/](../docs/).
+Full docs are at [lystbot.com](https://lystbot.com) and in [docs/](../docs/).

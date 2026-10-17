@@ -11,16 +11,16 @@
 </p>
 
 <p align="center">
-  <strong>LystBot is not another AI list app.</strong> There's no built-in AI. No chatbot. No "AI-powered suggestions."<br />
-  Instead, LystBot gives <em>your</em> AI - whether it's OpenClaw, Hermes, Claude Code, ChatGPT, Copilot, Grok Bot, or another agent - a direct line to your lists and reminders.<br />
-  <strong>Your AI controls the lists and reminders. The app is the window to the real world.</strong>
+  <strong>LystBot is not another AI list app.</strong> There's no built-in AI, no chatbot and no "AI-powered suggestions".<br />
+  Instead, LystBot gives <em>your</em> AI (a personal agent on OpenClaw, a Custom GPT, Claude) direct access to your lists and reminders.<br />
+  Your AI writes to the lists. You see the result in the app on your phone.
 </p>
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting started
 
-### 1. Get the App
+### 1. Get the app
 
 <p align="center">
   <a href="https://apps.apple.com/app/lystbot/id6742044832"><img src="https://img.shields.io/badge/App_Store-Download-blue?logo=apple&logoColor=white&style=for-the-badge" alt="App Store" /></a>
@@ -30,67 +30,59 @@
 
 Open the app, create your first list, and grab your API key from **Settings → AI Agents**.
 
-### 2. Connect Your AI Agent
+### 2. Connect your AI agent
 
-Head over to the agent setup page for step-by-step instructions:
+The agent setup page has step-by-step instructions:
 
 👉 **[lystbot.com/agents](https://lystbot.com/agents)**
 
-Three ways to connect, depending on your setup:
+There are three ways to connect:
 
 | Method | Best for | Setup time |
 |--------|----------|------------|
-| **CLI** | OpenClaw, personal agents, scripts, automation | 1 min |
-| **MCP Server** | Claude Desktop, Cursor, Windsurf, Cline | 2 min |
-| **REST API** | ChatGPT Actions, custom agents, Home Assistant | 5 min |
+| CLI | OpenClaw, personal agents, scripts, automation | 1 min |
+| MCP server | Claude Desktop, Cursor, Windsurf, Cline | 2 min |
+| REST API | ChatGPT Actions, custom agents, Home Assistant | 5 min |
 
 ### 3. That's it
 
 ```bash
 npx lystbot login YOUR_API_KEY
-lystbot add "Groceries" "Oat milk, Bananas, Coffee"
+npx lystbot add "Groceries" "Oat milk, Bananas, Coffee"
 ```
 
-Your agent adds items. Your phone updates instantly. Done.
+The items show up in the app right away.
 
 ---
 
-## 🧠 How It Works
+## 🧠 How it works
 
-Most "AI list apps" shove a chatbot inside the app. LystBot does the opposite: **your AI lives where it already lives**, and LystBot is the app it controls.
+Most "AI list apps" put a chatbot inside the app. LystBot does the opposite: you keep using the AI you already have, and it controls LystBot from the outside.
 
 ```
 You → talk to your AI → AI calls LystBot API → your phone updates instantly
 ```
 
-No new AI to learn. No prompts inside the app. Just connect your existing AI and it manages your groceries, packing lists, todos, reminders - anything.
+There's no new AI to learn and no prompting inside the app. Connect your existing AI and let it manage groceries, packing lists, todos and reminders.
 
-- 🤖 **"Add eggs to my shopping list" actually works** - from any AI you already use
-- 📱 **Your phone is the display** - your AI writes, you see it instantly
-- 🔑 **Clean separation** - the app is for humans, the API is for agents
-- 🔄 **Real-time sync** - your AI adds milk, your partner sees it immediately
+- "Add eggs to my shopping list" works from any AI you already use.
+- Your phone is the display. Your AI writes, you see the change.
+- The app is for humans, the API is for agents.
+- Changes sync in real time: your AI adds milk, your partner sees it immediately.
 
 ---
 
 ## ✨ Features
 
-🗒️ **Smart Lists** - Create, organize, and share lists with anyone
-
-🤝 **Real-time Sharing** - Invite others via share codes, collaborate live
-
-📱 **Cross-Platform** - iOS and Android, with CLI and API access
-
-⭐ **Favorites** - Quick-access items you use all the time
-
-🗂️ **Categories** - Structure lists into sections, move items between categories, keep uncategorized items in Other
-
-📎 **Attachments** - Attach images and links to items, from the app, the CLI, or an MCP agent
-
-⏰ **Reminders** - Let your AI create, update, disable, and delete one-time or recurring reminders
-
-🔔 **Push Notifications** - Know when your AI or your family changes a list
-
-🌐 **Open API** - Full REST API so any AI agent can read, write, and manage lists, categories, and reminders
+- **Lists**: create, organize and share lists.
+- **Sharing**: invite others with a share code and edit the same list together.
+- **Platforms**: iOS and Android apps, plus CLI and API access.
+- **Favorites**: quick access to items you add often.
+- **Categories**: split a list into sections and move items between them. Items without a category go to Other.
+- **Attachments**: add images and links to items from the app, the CLI or an MCP client.
+- **Reminders**: your AI can create, update, disable and delete one-time or recurring reminders.
+- **Push notifications**: get notified when your AI or your family changes a list.
+- **REST API**: any AI agent can read and change lists, categories and reminders.
 
 <p align="center">
   <img src="./assets/app-screenshot-dashboard.png" alt="Dashboard" width="220" />
@@ -102,16 +94,15 @@ No new AI to learn. No prompts inside the app. Just connect your existing AI and
 
 ---
 
-## 🤖 Agent Integrations
+## 🤖 Agent integrations
 
 LystBot works with any AI that can make HTTP requests. Here's how to connect yours:
 
-### Personal Agents & Autonomous Frameworks
+### Personal agents & autonomous frameworks
 
 | Agent | Provider | Integration |
 |-------|----------|-------------|
-| **OpenClaw** | OpenClaw | **CLI** (`npx lystbot`) |
-| **Hermes** | [Nous Research](https://hermes-agent.nousresearch.com/) | CLI or REST API |
+| OpenClaw | OpenClaw | CLI (`npx lystbot`) |
 | Devin | Cognition AI | CLI or REST API |
 | Aider | Open Source | CLI |
 | OpenCode | Open Source | CLI or MCP Server |
@@ -119,18 +110,18 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 | CrewAI | Open Source | REST API |
 | Manus AI | Manus | REST API |
 
-### Coding Agents & IDEs
+### Coding agents & IDEs
 
 | Agent | Provider | Integration |
 |-------|----------|-------------|
 | Claude Desktop | Anthropic | MCP Server ([setup below](#claude-desktop)) |
 | Claude Code | Anthropic | MCP Server ([setup below](#claude-code)) |
 | Cursor | Anysphere | MCP Server |
-| Windsurf | Codeium | MCP Server |
-| GitHub Copilot | Microsoft | MCP Server or Copilot Extension |
+| Windsurf | Cognition | MCP Server |
+| GitHub Copilot | Microsoft | MCP Server |
 | Cline | Open Source | MCP Server |
 
-### Voice Assistants & Chat AI
+### Voice assistants & chat AI
 
 | Agent | Provider | Integration |
 |-------|----------|-------------|
@@ -140,7 +131,6 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 | Grok | xAI | REST API |
 | Siri / Apple Intelligence | Apple | Apple Shortcuts with REST API |
 | Amazon Alexa | Amazon | Custom Alexa Skill with REST API |
-| Google Home | Google | Google Actions with REST API |
 
 > Don't see your agent? If it can call an API, it can use LystBot. Check the [API docs](./docs/api/).
 
@@ -148,13 +138,16 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 
 ## 💻 CLI
 
-The LystBot CLI lets you manage lists from the terminal. Built for AI agents like **OpenClaw** that work best with command-line tools, and for anyone who likes to script things.
+The LystBot CLI manages your lists from the terminal. It's built for AI agents like OpenClaw that work best with command-line tools, and for anyone who likes to script things.
 
-### Install & Login
+### Install & login
 
 ```bash
-npx lystbot login <YOUR_API_KEY>
+npm install -g lystbot
+lystbot login <YOUR_API_KEY>
 ```
+
+Without a global install, prefix every command with `npx`, for example `npx lystbot lists`.
 
 ### Commands
 
@@ -208,9 +201,9 @@ lystbot profile --name "TARS" --emoji "🤖" # Set your bot's display name
 
 ## 🔌 MCP Server
 
-LystBot ships with a built-in [MCP](https://modelcontextprotocol.io) server. Works with **Claude Desktop**, **Claude Code**, **Cursor**, **Windsurf**, **Cline**, and any MCP-compatible client.
+The CLI includes an [MCP](https://modelcontextprotocol.io) server. It works with Claude Desktop, Claude Code, Cursor, Windsurf, Cline and any other MCP client.
 
-**First, authenticate** (all setups need this):
+Log in first. Every setup below needs this:
 
 ```bash
 npx lystbot login <YOUR_API_KEY>
@@ -234,17 +227,15 @@ Add this to your config file:
 }
 ```
 
-Restart Claude Desktop. Done.
+Then restart Claude Desktop.
 
 ### Claude Code
-
-One command:
 
 ```bash
 claude mcp add lystbot -- npx lystbot mcp
 ```
 
-That's it. Claude Code can now manage your lists.
+Claude Code can now manage your lists.
 
 ### Cursor / Windsurf / Cline
 
@@ -261,7 +252,7 @@ Add the same config to your editor's MCP settings:
 }
 ```
 
-### Available Tools
+### Available tools
 
 | Tool | Description |
 |------|-------------|
@@ -292,7 +283,7 @@ Add the same config to your editor's MCP settings:
 | `update_reminder` | Update a reminder |
 | `delete_reminder` | Delete a reminder |
 
-`add_items` understands `250g Mehl`, `3x Milch`, plain counts such as `3 Bananen` / `3 bananas`, and container forms such as `2 Flaschen Wein`. Agents can instead send `[{"text":"Mehl","quantity":2,"unit":"500g"}]`; weight belongs in `unit`, not quantity `250`.
+`add_items` understands `250g Mehl`, `3x Milch`, plain counts such as `3 Bananen` or `3 bananas`, and container forms such as `2 Flaschen Wein`. Agents can also send structured items like `[{"text":"Mehl","quantity":2,"unit":"500g"}]`. Weights go into `unit`, so 250 g of flour is `"unit":"250g"`, not `"quantity":250`.
 
 ---
 
@@ -305,35 +296,31 @@ Add the same config to your editor's MCP settings:
 │   App)       │  │   ChatGPT)   │  │   Cursor)    │  │   lystbot)   │
 └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
        │                 │                 │                 │
-       │ X-Device-UUID   │ Bearer Token    │ MCP Protocol    │ Bearer Token
+       │ X-Device-UUID   │ Bearer Token    │ MCP via CLI     │ Bearer Token
        │                 │                 │                 │
        └────────┬────────┴────────┬────────┴────────┬────────┘
                 │                 │                 │
          ┌──────▼─────────────────▼─────────────────▼──────┐
          │               LystBot API                       │
-         │            (REST/JSON + MCP)                     │
+         │               (REST/JSON)                       │
          └─────────────────────────────────────────────────┘
 ```
+
+The MCP server runs locally as `lystbot mcp` and calls the same REST API with your API key.
 
 ---
 
 ## 📚 Documentation
 
-- 📡 **[API Reference](./docs/api/)** - Full endpoint docs with curl examples
-- 💻 **[CLI Reference](./docs/cli/)** - All commands and flags
-- 🔌 **MCP Server** - `npx lystbot mcp` (see [setup above](#-mcp-server))
+- [API reference](./docs/api/): all endpoints with curl examples
+- [CLI reference](./docs/cli/): all commands and flags
+- MCP server: `npx lystbot mcp` (see [setup above](#-mcp-server))
 
 ---
 
 ## 🤝 Contributing
 
-We'd love your help! Whether it's:
-
-- 🐛 Bug reports and feature requests via [Issues](https://github.com/TourAround/LystBot/issues)
-- 🔧 CLI improvements and new commands
-- 📖 Documentation fixes
-
-Fork it, branch it, PR it.
+Bug reports and feature requests go to [Issues](https://github.com/TourAround/LystBot/issues). Pull requests for the CLI and the docs are welcome.
 
 ---
 

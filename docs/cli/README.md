@@ -1,18 +1,19 @@
 # 💻 LystBot CLI
 
-The LystBot CLI lets you manage your lists from the terminal (and is also used by AI agents).
+The LystBot CLI manages your lists from the terminal. AI agents use it too.
 
-## Install / Run
-
-Recommended (no global install):
+## Install / run
 
 ```bash
-npx lystbot login <YOUR_API_KEY>
+npm install -g lystbot
+lystbot login <YOUR_API_KEY>
 ```
 
-Your API key is in the app: **Settings → AI Agents**.
+You can also skip the install and prefix each command with `npx`, for example `npx lystbot login <YOUR_API_KEY>`. The examples below assume a global install.
 
-## Core Commands
+Your API key is in the app under Settings → AI Agents.
+
+## Core commands
 
 ```bash
 # Lists
@@ -54,9 +55,9 @@ lystbot reminder-delete <id> --yes
 lystbot profile --name "TARS" --emoji "🤖"
 ```
 
-Natural item syntax is normalized before sending: `250g Mehl` becomes text `Mehl`, quantity `1`, unit `250g`; `3x Milch` becomes quantity `3`; and `2 Flaschen Wein` becomes unit `2 Flaschen`. Counts also support `4 x` and German `4 mal`; units support metric weight/volume, `lb`/`lbs`/`oz`, German/English containers, and `6er Pack`.
+The CLI parses natural item syntax before sending it. `250g Mehl` becomes text `Mehl` with quantity `1` and unit `250g`. `3x Milch` gets quantity `3`. `2 Flaschen Wein` gets unit `2 Flaschen`. Counts can also be written as `4 x` or the German `4 mal`. Units cover metric weight and volume (`g`, `kg`, `ml`, `l`), `lb`, `lbs`, `oz`, common German and English containers, and `6er Pack`.
 
-`--quantity` accepts an integer from 1 to 99. `--quantity` and `--unit` override parsed fields and are rejected for batch calls. Weight always belongs in `unit`, not in `quantity`.
+`--quantity` takes a whole number from 1 to 99. `--quantity` and `--unit` override the parsed fields and are rejected when you add more than one item. Weight always goes into `unit`, not `quantity`.
 
 ## Categories
 
@@ -129,22 +130,24 @@ lystbot reminder-delete <id> --yes --json
 
 Reminder fields:
 
-- `--at <datetime>` is required when creating a reminder
-- `--timezone <tz>` defaults to `Europe/Berlin`
-- `--repeat <repeat>` accepts `none`, `daily`, `weekly`, `biweekly`, `monthly`, `yearly`
-- `--disabled` creates or updates a reminder as disabled
-- `--enabled` re-enables an existing reminder
-- `--json` is available on reminder list, show, create, update, and delete commands
+- `--at <datetime>` is required when you create a reminder.
+- `--timezone <tz>` defaults to `Europe/Berlin` on `remind`.
+- `--repeat <repeat>` accepts `none`, `daily`, `weekly`, `biweekly`, `monthly` and `yearly`.
+- `--disabled` creates a reminder as disabled or disables an existing one.
+- `--enabled` turns an existing reminder back on.
+- `--json` works on `reminders`, `reminder`, `remind`, `reminder-update` and `reminder-delete`.
 
-`lystbot reminder-delete <id>` prompts before deleting. Use `--yes` to skip the prompt in scripts.
+`lystbot reminder-delete <id>` asks before deleting. Use `--yes` to skip the question in scripts; without a terminal, the command refuses to delete unless `--yes` is set.
 
 ## Options
 
-- `--json` on some commands for scripting
-- `--api <url>` to override API base URL
-- `--config <path>` to use a custom config file (multi-agent setups)
+- `--json` prints JSON on most read commands, for scripting.
+- `--api <url>` overrides the API base URL (default `https://lystbot.com/api/v1`).
+- `--config <path>` uses a different config file, which helps when several agents share one machine.
 
-## MCP Server
+The same settings can come from environment variables: `LYSTBOT_API_URL` for the API URL and `LYSTBOT_CONFIG` for the config file path.
+
+## MCP server
 
 Start the MCP server:
 
@@ -152,8 +155,8 @@ Start the MCP server:
 lystbot mcp
 ```
 
-Attachment tools: `add_item_image` (either `image_path` for a local file, or `image_base64` plus `mime_type` and `filename`), `add_item_url`, `list_item_attachments`, and `delete_item_attachment`.
+Attachment tools: `add_item_image` (either `image_path` for a local file, or `image_base64` plus `mime_type` and `filename`), `add_item_url`, `list_item_attachments` and `delete_item_attachment`.
 
-The `add_items` tool accepts the existing delimited string or structured entries with `text`, optional integer `quantity` (`1..99`), and optional string/null `unit`. Example: `[{"text":"Mehl","quantity":2,"unit":"500g"}]`. Natural prefixes in `text` are parsed first; explicit structured fields override them.
+The `add_items` tool accepts a delimited string or structured entries with `text`, an optional whole-number `quantity` (`1..99`) and an optional `unit` (string or `null`). Example: `[{"text":"Mehl","quantity":2,"unit":"500g"}]`. Natural prefixes in `text` are parsed first, and explicit structured fields override them.
 
-See the main README for Claude Desktop / Cursor configuration.
+See the [main README](../../README.md#-mcp-server) for the Claude Desktop and Cursor setup.

@@ -1,4 +1,4 @@
-# 📡 LystBot API Reference
+# 📡 LystBot API reference
 
 > Base URL: `https://lystbot.com/api/v1`
 
@@ -10,7 +10,7 @@ All requests and responses use `Content-Type: application/json`.
 
 ## Authentication
 
-### Mobile App / Device Auth
+### Mobile app / device auth
 
 Use the device UUID header:
 
@@ -18,7 +18,7 @@ Use the device UUID header:
 X-Device-UUID: your-device-uuid
 ```
 
-### Agents, CLI, MCP, Automations
+### Agents, CLI, MCP, automations
 
 Use a Bearer API key:
 
@@ -26,7 +26,7 @@ Use a Bearer API key:
 Authorization: Bearer your-api-key
 ```
 
-### Agent Self-Management
+### Agent self-management
 
 `PATCH /agents/me` is Bearer-only. No device header is required.
 
@@ -352,7 +352,7 @@ curl https://lystbot.com/api/v1/items/ITEM_ID/attachments \
 
 ### `GET /attachments/{attachmentId}` and `GET /attachments/{attachmentId}/thumbnail`
 
-Return the raw image bytes (not JSON). Used by the app for display.
+Both return raw image bytes, not JSON. The app uses them for display.
 
 ### `DELETE /attachments/{attachmentId}`
 
@@ -525,7 +525,7 @@ curl -X POST https://lystbot.com/api/v1/lists/LIST_ID/leave \
 
 ## Reminders
 
-Reminders can be managed by agents, the CLI, MCP server, and automations with the same Bearer API key auth shown above.
+Agents, the CLI, the MCP server and automations manage reminders with the same Bearer API key shown above.
 
 Fields:
 
@@ -754,7 +754,7 @@ curl -X POST https://lystbot.com/api/v1/favorites/FAVORITE_ID/use \
 
 ---
 
-## Agent Profile
+## Agent profile
 
 ### `PATCH /agents/me`
 
