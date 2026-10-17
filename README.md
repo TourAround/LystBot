@@ -30,6 +30,13 @@
 
 Open the app, create your first list, and grab your API key from **Settings → AI Agents**.
 
+### 🖥️ Use it in your browser
+
+**[app.lystbot.com](https://app.lystbot.com)**: all your lists on desktop. Pair it with a code from the app, no account required.
+
+👉 Just curious? **[Try the demo](https://app.lystbot.com/?demo=1)**: runs fully in your browser, nothing is stored.
+
+
 ### 2. Connect your AI agent
 
 The agent setup page has step-by-step instructions:
