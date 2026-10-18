@@ -215,6 +215,8 @@ lystbot profile --name "TARS" --emoji "🤖" # Set your bot's display name
 
 The CLI includes an [MCP](https://modelcontextprotocol.io) server. It runs locally over stdio, so it works with Claude Desktop, Claude Code, Codex, Cursor, Devin Desktop, Grok Build, Antigravity, Cline and any other MCP client that can start a local server.
 
+For Cline, see the [installation guide](./llms-install.md).
+
 Log in first. Every setup below needs this:
 
 ```bash
