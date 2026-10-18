@@ -20,7 +20,12 @@ Allow npm to install the `lystbot` package if prompted, then enter the key at th
 
 ## Configure Cline
 
-Open Cline's MCP Servers panel, select Configure, then Configure MCP Servers to open `cline_mcp_settings.json`. Merge this entry into the existing `mcpServers` object; preserve other servers:
+### Where the settings file lives
+
+- Cline CLI: `~/.cline/data/settings/cline_mcp_settings.json`. If `CLINE_MCP_SETTINGS_PATH` is set, use the file it points to instead.
+- VS Code extension: open Cline's MCP Servers panel, select Configure, then Configure MCP Servers to open `cline_mcp_settings.json`.
+
+If the file is missing, create its parent directories and initialize it with `{"mcpServers":{}}`. Read the existing file before editing. Add only the `lystbot` key shown below to `mcpServers`; preserve all existing entries and other settings. Don't replace the whole file with this example:
 
 ```json
 {
