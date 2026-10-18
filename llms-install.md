@@ -42,7 +42,9 @@ The server runs locally over stdio and reads the saved login. No `env` entry is 
 
 ## Verify
 
-Once Cline connects, call the LystBot tool `list_lists` with `{}`. It returns the accessible lists, or `No lists found.` if there are none. This check doesn't create or change data. A connected server alone doesn't prove that the key works; the tool call must succeed.
+After saving the settings, Cline CLI loads the server only when a new session starts. Ask the user to start a new Cline CLI session, or, in VS Code, check the server list and available tools in the MCP Servers panel. Don't start the server manually from the shell to bypass this step.
+
+Once Cline connects, call the LystBot tool `list_lists` with `{}` through Cline's MCP connection. It returns the accessible lists, or `No lists found.` if there are none. This check doesn't create or change data. A connected server alone doesn't prove that the key works; the tool call must succeed.
 
 ## Troubleshooting
 
