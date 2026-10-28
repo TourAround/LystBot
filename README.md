@@ -137,12 +137,14 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 
 | Agent | Provider | Integration |
 |-------|----------|-------------|
-| ChatGPT | OpenAI | Custom GPT with OpenAPI Actions |
+| ChatGPT | OpenAI | Remote OAuth MCP (see below), or Custom GPT with OpenAPI Actions |
 | Google Gemini | Google | Gemini API function calling with the REST API |
 | Microsoft Copilot | Microsoft | Copilot Studio agent with a REST API tool (OpenAPI) |
 | Grok | xAI | xAI API function calling with the REST API |
-| Siri / Apple Intelligence | Apple | Apple Shortcuts with REST API |
+| Siri / Apple Intelligence | Apple | Native Siri actions; optional REST shortcuts |
 | Amazon Alexa | Amazon | [LystBot Alexa skill](https://www.amazon.de/dp/B0HGRK2B5H) |
+
+On supported iOS versions, LystBot includes native Siri actions for adding items, reading lists and creating reminders. Open **Settings → Siri** for supported phrases, such as “Add milk to my shopping list in LystBot”. Keep the iPhone unlocked. Custom REST shortcuts are optional.
 
 > Don't see your agent? If it can call an API, it can use LystBot. Check the [API docs](./docs/api/).
 
@@ -193,9 +195,9 @@ lystbot move "Groceries" "Bananas" --category other      # Move to Other/uncateg
 # Reminders
 lystbot reminders                                      # Show all reminders
 lystbot reminder <id>                                  # Show one reminder
-lystbot remind "Take vitamins" --at "2026-05-08 09:00" --timezone "Europe/Berlin"
+lystbot remind "Take vitamins" --at "tomorrow 09:00" --timezone "Europe/Berlin"
 lystbot reminder-update <id> --title "Take supplements"
-lystbot reminder-update <id> --at "2026-05-09 09:00" --enabled
+lystbot reminder-update <id> --at "tomorrow 09:00" --enabled
 lystbot reminder-update <id> --disabled
 lystbot reminder-delete <id> --yes
 
@@ -214,6 +216,8 @@ lystbot profile --name "TARS" --emoji "🤖" # Set your bot's display name
 ## 🔌 MCP Server
 
 The CLI includes an [MCP](https://modelcontextprotocol.io) server. It runs locally over stdio, so it works with Claude Desktop, Claude Code, Codex, Cursor, Devin Desktop, Grok Build, Antigravity, Cline and any other MCP client that can start a local server.
+
+A remote OAuth MCP endpoint is also available at `https://lystbot.com/api/v1/mcp`. For the ChatGPT plugin, generate a pairing code in **Settings → ChatGPT** and enter it on LystBot's authorization page when connecting. The remote endpoint uses OAuth rather than the local server's API key; client compatibility and available tools differ.
 
 For Cline, see the [installation guide](./llms-install.md).
 

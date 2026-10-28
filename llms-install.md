@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Node.js 18 or later, with npm and npx available to Cline.
-- A LystBot account and API key from the LystBot app.
+- The LystBot app and its API key from Settings → AI Agents. No LystBot account, email address or password is required.
 - Network access to npm for installation and to `https://lystbot.com/api/v1` for tool calls.
 
 ## Log in

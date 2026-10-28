@@ -44,9 +44,9 @@ lystbot join ABC123
 # Reminders
 lystbot reminders
 lystbot reminder <id>
-lystbot remind "Take vitamins" --at "2026-05-08 09:00" --timezone "Europe/Berlin"
+lystbot remind "Take vitamins" --at "tomorrow 09:00" --timezone "Europe/Berlin"
 lystbot reminder-update <id> --title "Take supplements"
-lystbot reminder-update <id> --at "2026-05-09 09:00" --timezone "Europe/Berlin"
+lystbot reminder-update <id> --at "tomorrow 09:00" --timezone "Europe/Berlin"
 lystbot reminder-update <id> --enabled
 lystbot reminder-update <id> --disabled
 lystbot reminder-delete <id> --yes
@@ -78,7 +78,7 @@ lystbot move "Groceries" "Bananas" --category other
 
 ## Attachments
 
-Items can carry images and links.
+Items can carry images and links. Image uploads accept JPEG, PNG or WebP up to 5 MiB. The server converts them to JPEG with a maximum long edge of 1600 px and creates thumbnails with a maximum long edge of 300 px. Links must use http/https and be at most 2048 bytes; optional titles may contain up to 255 characters. Links are stored without fetching or unfurling.
 
 ```bash
 # Upload a local image file
@@ -111,13 +111,13 @@ lystbot reminder <id>
 lystbot reminder <id> --json
 
 # Create
-lystbot remind "Take vitamins" --at "2026-05-08 09:00" --timezone "Europe/Berlin"
-lystbot remind "Water plants" --at "2026-05-08 18:00" --repeat weekly
-lystbot remind "Draft report" --at "2026-05-08 10:00" --disabled --json
+lystbot remind "Take vitamins" --at "tomorrow 09:00" --timezone "Europe/Berlin"
+lystbot remind "Water plants" --at "tomorrow 18:00" --repeat weekly
+lystbot remind "Draft report" --at "tomorrow 10:00" --disabled --json
 
 # Update
 lystbot reminder-update <id> --title "Take supplements"
-lystbot reminder-update <id> --at "2026-05-09 09:00" --timezone "Europe/Berlin"
+lystbot reminder-update <id> --at "tomorrow 09:00" --timezone "Europe/Berlin"
 lystbot reminder-update <id> --repeat monthly
 lystbot reminder-update <id> --enabled
 lystbot reminder-update <id> --disabled --json

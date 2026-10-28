@@ -4,7 +4,7 @@
 
 LystBot exposes the same list, category, and reminder data that powers the mobile app, CLI, and MCP server.
 
-All requests and responses use `Content-Type: application/json`.
+Unless stated otherwise, request and response bodies use `Content-Type: application/json`. Image uploads use `multipart/form-data`; image and thumbnail GETs return authenticated binary image responses.
 
 ---
 
@@ -12,11 +12,14 @@ All requests and responses use `Content-Type: application/json`.
 
 ### Mobile app / device auth
 
-Use the device UUID header:
+First-party app requests from version 1.0.8 use Bearer authentication with the app context header:
 
 ```http
-X-Device-UUID: your-device-uuid
+Authorization: Bearer your-api-key
+X-LystBot-Client: app
 ```
+
+`X-Device-UUID` is legacy-only and is rejected with `bearer_required` after the device migrates to Bearer authentication.
 
 ### Agents, CLI, MCP, automations
 
@@ -25,6 +28,8 @@ Use a Bearer API key:
 ```http
 Authorization: Bearer your-api-key
 ```
+
+Bearer responses redact member `device_uuid` and item `created_by` to `null`. Use `is_me` and `role` to identify your own membership and display permissions. Agents do not need the app context header.
 
 ### Agent self-management
 
@@ -98,7 +103,8 @@ curl https://lystbot.com/api/v1/lists/LIST_ID \
   "hide_completed": false,
   "members": [
     {
-      "device_uuid": "device-uuid",
+      "device_uuid": null,
+      "is_me": true,
       "name": "Alex",
       "display_name": "Alex",
       "label": "Alex",
@@ -131,7 +137,7 @@ curl https://lystbot.com/api/v1/lists/LIST_ID \
       "quantity": 2,
       "unit": null,
       "position": 0,
-      "created_by": "device-uuid",
+      "created_by": null,
       "created_by_api_key_id": 12,
       "updated_at": "2026-04-14T10:05:00Z"
     },
@@ -143,7 +149,7 @@ curl https://lystbot.com/api/v1/lists/LIST_ID \
       "quantity": 1,
       "unit": null,
       "position": 1,
-      "created_by": "device-uuid",
+      "created_by": null,
       "created_by_api_key_id": null,
       "updated_at": "2026-04-14T10:06:00Z"
     }
@@ -193,6 +199,19 @@ curl -X PUT https://lystbot.com/api/v1/lists/LIST_ID \
   "success": true
 }
 ```
+
+### `PUT /lists/reorder`
+
+Set the caller's list order. Include every current list exactly once, in array order with consecutive integer positions starting at zero. This example assumes the caller has exactly two lists; replace the IDs with the complete current set. Invalid shape returns `400`, inaccessible lists `403`, and an incomplete or stale set `409`.
+
+```bash
+curl -X PUT https://lystbot.com/api/v1/lists/reorder \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"order": [{"list_id": "LIST_ID_1", "position": 0}, {"list_id": "LIST_ID_2", "position": 1}]}'
+```
+
+Returns `{"success": true}`.
 
 ### `DELETE /lists/{id}`
 
@@ -293,15 +312,18 @@ curl -X DELETE https://lystbot.com/api/v1/lists/LIST_ID/items/checked \
 
 ## Attachments
 
-Items can carry image and link attachments. An attachment looks like:
+Items can carry image and link attachments. Images accept JPEG, PNG or WebP up to 5 MiB. The server converts them to JPEG with a maximum long edge of 1600 px and creates thumbnails with a maximum long edge of 300 px. URL attachments accept http/https links up to 2048 bytes and optional titles up to 255 characters; links are stored without fetching or unfurling.
+
+For images, `url` is `null`. Prefix `image_path` and `thumbnail_path` with the API base URL and send the same authentication as for the item. URL attachments contain the external link in `url` and have `image_path: null`. An image attachment looks like:
 
 ```json
 {
   "id": "ATTACHMENT_ID",
   "type": "image",
-  "url": "https://lystbot.com/api/v1/attachments/ATTACHMENT_ID",
+  "url": null,
+  "image_path": "/attachments/ATTACHMENT_ID",
   "title": null,
-  "thumbnail_path": "https://lystbot.com/api/v1/attachments/ATTACHMENT_ID/thumbnail",
+  "thumbnail_path": "/attachments/ATTACHMENT_ID/thumbnail",
   "mime_type": "image/jpeg"
 }
 ```
@@ -344,8 +366,8 @@ curl https://lystbot.com/api/v1/items/ITEM_ID/attachments \
 ```json
 {
   "attachments": [
-    { "id": "...", "type": "image", "url": "...", "title": null, "thumbnail_path": "...", "mime_type": "image/jpeg" },
-    { "id": "...", "type": "url", "url": "https://example.com/recipe", "title": "Recipe", "thumbnail_path": null, "mime_type": null }
+    { "id": "ATTACHMENT_ID", "type": "image", "url": null, "title": null, "image_path": "/attachments/ATTACHMENT_ID", "thumbnail_path": "/attachments/ATTACHMENT_ID/thumbnail", "mime_type": "image/jpeg" },
+    { "id": "...", "type": "url", "url": "https://example.com/recipe", "title": "Recipe", "image_path": null, "thumbnail_path": null, "mime_type": null }
   ]
 }
 ```
@@ -497,7 +519,8 @@ curl -X POST https://lystbot.com/api/v1/lists/join \
   "emoji": "🛒",
   "members": [
     {
-      "device_uuid": "device-uuid",
+      "device_uuid": null,
+      "is_me": false,
       "name": "Alex",
       "signature_emoji": "🙂",
       "role": "owner"
@@ -529,14 +552,14 @@ Agents, the CLI, the MCP server and automations manage reminders with the same B
 
 Fields:
 
-- `id`: reminder UUID
+- `id`: reminder UUID; optional on creation, generated by the server when omitted or empty. A supplied non-empty ID must be a valid UUID.
 - `title`: reminder text
 - `scheduled_at`: scheduled date/time string
 - `timezone`: IANA timezone, for example `Europe/Berlin`
 - `repeat`: `none`, `daily`, `weekly`, `biweekly`, `monthly`, `yearly`
 - `is_enabled`: whether the reminder is active
 
-One-time reminders with `"repeat": "none"` cannot be created in the past.
+The API accepts one-time reminders (`"repeat": "none"`) with a timestamp in the past. Use a future local date and time for a future notification. Replace the dates in the examples below with your intended future time in the specified timezone.
 
 ### `GET /reminders`
 
@@ -553,7 +576,7 @@ curl https://lystbot.com/api/v1/reminders \
     {
       "id": "reminder-uuid",
       "title": "Take vitamins",
-      "scheduled_at": "2026-05-08 09:00",
+      "scheduled_at": "2099-01-01T09:00:00",
       "timezone": "Europe/Berlin",
       "repeat": "none",
       "is_enabled": true
@@ -571,9 +594,8 @@ curl -X POST https://lystbot.com/api/v1/reminders \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "id": "reminder-uuid",
     "title": "Take vitamins",
-    "scheduled_at": "2026-05-08 09:00",
+    "scheduled_at": "2099-01-01 09:00",
     "timezone": "Europe/Berlin",
     "repeat": "none",
     "is_enabled": true
@@ -582,14 +604,12 @@ curl -X POST https://lystbot.com/api/v1/reminders \
 
 ```json
 {
-  "reminder": {
-    "id": "reminder-uuid",
-    "title": "Take vitamins",
-    "scheduled_at": "2026-05-08 09:00",
-    "timezone": "Europe/Berlin",
-    "repeat": "none",
-    "is_enabled": true
-  }
+  "id": "reminder-uuid",
+  "title": "Take vitamins",
+  "scheduled_at": "2099-01-01T09:00:00",
+  "timezone": "Europe/Berlin",
+  "repeat": "none",
+  "is_enabled": true
 }
 ```
 
@@ -604,14 +624,12 @@ curl https://lystbot.com/api/v1/reminders/REMINDER_ID \
 
 ```json
 {
-  "reminder": {
-    "id": "reminder-uuid",
-    "title": "Take vitamins",
-    "scheduled_at": "2026-05-08 09:00",
-    "timezone": "Europe/Berlin",
-    "repeat": "none",
-    "is_enabled": true
-  }
+  "id": "reminder-uuid",
+  "title": "Take vitamins",
+  "scheduled_at": "2099-01-01T09:00:00",
+  "timezone": "Europe/Berlin",
+  "repeat": "none",
+  "is_enabled": true
 }
 ```
 
@@ -625,7 +643,7 @@ curl -X PUT https://lystbot.com/api/v1/reminders/REMINDER_ID \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Take supplements",
-    "scheduled_at": "2026-05-09 09:00",
+    "scheduled_at": "2099-01-02 09:00",
     "timezone": "Europe/Berlin",
     "repeat": "daily",
     "is_enabled": true
@@ -634,14 +652,12 @@ curl -X PUT https://lystbot.com/api/v1/reminders/REMINDER_ID \
 
 ```json
 {
-  "reminder": {
-    "id": "reminder-uuid",
-    "title": "Take supplements",
-    "scheduled_at": "2026-05-09 09:00",
-    "timezone": "Europe/Berlin",
-    "repeat": "daily",
-    "is_enabled": true
-  }
+  "id": "reminder-uuid",
+  "title": "Take supplements",
+  "scheduled_at": "2099-01-02T09:00:00",
+  "timezone": "Europe/Berlin",
+  "repeat": "daily",
+  "is_enabled": true
 }
 ```
 
@@ -806,7 +822,7 @@ Common codes:
 ## Notes
 
 - All list, item, category, and favorite IDs should be UUID v4
-- `quantity` is limited to `1..99`
+- CLI and local MCP counts are integers in `1..99`. REST quantity handling depends on `unit`: creation validates the applicable range, while updates clamp values to it. Do not infer REST limits from CLI limits.
 - Items without `category_id` appear in **Other** / uncategorized
 - Deleting a category moves its items to **Other** / uncategorized
 - The CLI (`npx lystbot`) and built-in MCP server use these same endpoints

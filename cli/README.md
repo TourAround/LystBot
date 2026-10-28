@@ -27,9 +27,9 @@ npx lystbot detach <attachment-id>
 # Reminders
 npx lystbot reminders
 npx lystbot reminder <id>
-npx lystbot remind "Take vitamins" --at "2026-05-08 09:00" --timezone "Europe/Berlin"
+npx lystbot remind "Take vitamins" --at "tomorrow 09:00" --timezone "Europe/Berlin"
 npx lystbot reminder-update <id> --title "Take supplements"
-npx lystbot reminder-update <id> --at "2026-05-09 09:00" --enabled
+npx lystbot reminder-update <id> --at "tomorrow 09:00" --enabled
 npx lystbot reminder-update <id> --disabled
 npx lystbot reminder-delete <id> --yes
 ```
