@@ -7,17 +7,17 @@
     "source": "github",
     "subfolder": "cli"
   },
-  "version": "0.4.0",
+  "version": "0.4.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "lystbot",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "transport": {
         "type": "stdio"
       },
-      "runtime": "node",
-      "runtimeArgs": [">=18.0.0"],
+      "runtimeHint": "npx",
+      "packageArguments": [{ "type": "positional", "value": "mcp" }],
       "environmentVariables": []
     }
   ],

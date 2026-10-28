@@ -38,7 +38,7 @@ The CLI turns natural prefixes into structured fields. `250g Mehl` becomes text 
 
 ## MCP server (Claude Desktop, Cursor, Devin Desktop)
 
-The CLI includes an MCP server. Add it to your AI tool:
+The CLI includes an MCP server. After login, configure your client to run `npx` with args `["lystbot", "mcp"]` (`npx lystbot mcp`):
 
 ### Claude Desktop
 
