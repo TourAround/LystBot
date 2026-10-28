@@ -224,7 +224,7 @@ program
     }
 
     if (!reminders.length) {
-      console.log('⏰ No reminders yet. Create one: lystbot remind "Take vitamins" --at "2026-05-08 09:00"');
+      console.log('⏰ No reminders yet. Create one: lystbot remind "Take vitamins" --at "tomorrow 09:00"');
       return;
     }
 
