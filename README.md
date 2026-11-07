@@ -11,8 +11,8 @@
 </p>
 
 <p align="center">
-  <strong>LystBot is not another AI list app.</strong> There's no built-in AI, no chatbot and no "AI-powered suggestions".<br />
-  Instead, LystBot gives <em>your</em> AI (a personal agent on OpenClaw, a Custom GPT, Claude) direct access to your lists and reminders.<br />
+  <strong>LystBot is not another AI list app.</strong> LystBot has no built-in chatbot or AI-powered suggestions. Optional free-form voice commands use external model providers as described in our <a href="https://lystbot.com/legal/privacy-en.html">Privacy Policy</a>.<br />
+  Instead, LystBot gives <em>your</em> AI (ChatGPT, a personal agent on OpenClaw, Claude) direct access to your lists and reminders.<br />
   Your AI writes to the lists. You see the result in the app on your phone.
 </p>
 
@@ -28,7 +28,7 @@
   <a href="https://play.google.com/store/apps/details?id=io.touraround.lystbot"><img src="https://img.shields.io/badge/Google_Play-Download-green?logo=googleplay&logoColor=white&style=for-the-badge" alt="Google Play" /></a>
 </p>
 
-Open the app, create your first list, and grab your API key from **Settings → AI Agents**.
+Open the app and create your first list.
 
 ### 🖥️ Use it in your browser
 
@@ -43,15 +43,20 @@ The agent setup page has step-by-step instructions:
 
 👉 **[lystbot.com/agents](https://lystbot.com/agents)**
 
-There are three ways to connect:
+There are four ways to connect:
 
-| Method | Best for | Setup time |
+| Method | Best for | Setup |
 |--------|----------|------------|
+| ChatGPT | LystBot connection over remote OAuth MCP | Six-digit app pairing code; no API key |
 | CLI | OpenClaw, Grok Bot, personal agents, scripts, automation | 1 min |
-| MCP server | Claude Desktop, Claude Code, Codex, Cursor, Devin Desktop | 2 min |
-| REST API | ChatGPT Actions, Copilot Studio, custom agents, Home Assistant | 5 min |
+| Local MCP server | Claude Desktop, Claude Code, Codex, Cursor, Devin Desktop | 2 min |
+| REST API | Copilot Studio, custom agents, Home Assistant | 5 min |
+
+For ChatGPT, follow the [ChatGPT connection guide](https://lystbot.com/agents#chatgpt). For CLI, local MCP and REST integrations, get your API key from **Settings → AI Agents**.
 
 ### 3. That's it
+
+For example, using the CLI:
 
 ```bash
 npx lystbot login YOUR_API_KEY
@@ -137,7 +142,7 @@ LystBot works with any AI that can make HTTP requests. Here's how to connect you
 
 | Agent | Provider | Integration |
 |-------|----------|-------------|
-| ChatGPT | OpenAI | Remote OAuth MCP (see below), or Custom GPT with OpenAPI Actions |
+| ChatGPT | OpenAI | [LystBot app](https://chatgpt.com/plugins/plugin_asdk_app_6ac6217aa5a8819193caf8804dd369ef) over remote OAuth MCP; six-digit app pairing code, no API key |
 | Google Gemini | Google | Gemini API function calling with the REST API |
 | Microsoft Copilot | Microsoft | Copilot Studio agent with a REST API tool (OpenAPI) |
 | Grok | xAI | xAI API function calling with the REST API |
@@ -217,11 +222,19 @@ lystbot profile --name "TARS" --emoji "🤖" # Set your bot's display name
 
 The CLI includes an [MCP](https://modelcontextprotocol.io) server. It runs locally over stdio, so it works with Claude Desktop, Claude Code, Codex, Cursor, Devin Desktop, Grok Build, Antigravity, Cline and any other MCP client that can start a local server.
 
-A remote OAuth MCP endpoint is also available at `https://lystbot.com/api/v1/mcp`. For the ChatGPT plugin, generate a pairing code in **Settings → ChatGPT** and enter it on LystBot's authorization page when connecting. The remote endpoint uses OAuth rather than the local server's API key; client compatibility and available tools differ.
+The OpenAI-approved [LystBot app for ChatGPT](https://chatgpt.com/plugins/plugin_asdk_app_6ac6217aa5a8819193caf8804dd369ef) has been publicly available since October 23, 2026. It connects over remote OAuth MCP at `https://lystbot.com/api/v1/mcp`, without an API key:
+
+1. In the LystBot app, open **Settings → ChatGPT** and generate a six-digit pairing code.
+2. Open the LystBot app in ChatGPT and select **Connect**.
+3. Enter the code on LystBot's authorization page, approve access and return to ChatGPT. The code expires after 10 minutes and can be used once.
+
+ChatGPT uses seven remote OAuth tools: `list_lists`, `get_list`, `list_reminders`, `create_list`, `add_items`, `update_item`, `create_reminder`. It does not expose delete or sharing operations. Refresh tokens rotate; each refresh sets the new refresh token's expiry to 30 days from that refresh.
+
+OpenAI (ChatGPT) receives authorized list and reminder data, including accessible shared lists. Disconnect in **LystBot Settings → ChatGPT** or in ChatGPT. This revokes access without deleting earlier chats. See the [Privacy Policy](https://lystbot.com/legal/privacy-en.html) and [Terms](https://lystbot.com/legal/terms-en.html).
 
 For Cline, see the [installation guide](./llms-install.md).
 
-Log in first. Every setup below needs this:
+For the local stdio MCP setups below, log in first:
 
 ```bash
 npx lystbot login <YOUR_API_KEY>
@@ -278,7 +291,8 @@ Add the same config to the tool's MCP settings. For Cursor that's `.cursor/mcp.j
 }
 ```
 
-### Available tools
+<a id="available-tools"></a>
+### Local stdio MCP tools (26)
 
 | Tool | Description |
 |------|-------------|
@@ -316,23 +330,13 @@ Add the same config to the tool's MCP settings. For Cursor that's `.cursor/mcp.j
 ## 🏗️ Architecture
 
 ```
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  Your Phone  │  │   Your AI    │  │  MCP Client  │  │     CLI      │
-│  (LystBot    │  │  (OpenClaw,  │  │  (Claude,    │  │  (npx        │
-│   App)       │  │   ChatGPT)   │  │   Cursor)    │  │   lystbot)   │
-└──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-       │                 │                 │                 │
-       │ X-Device-UUID   │ Bearer Token    │ MCP via CLI     │ Bearer Token
-       │                 │                 │                 │
-       └────────┬────────┴────────┬────────┴────────┬────────┘
-                │                 │                 │
-         ┌──────▼─────────────────▼─────────────────▼──────┐
-         │               LystBot API                       │
-         │               (REST/JSON)                       │
-         └─────────────────────────────────────────────────┘
+LystBot App (1.0.8+) ── Bearer app key + X-LystBot-Client: app ──┐
+ChatGPT             ── Remote MCP + OAuth ───────────────────────┤
+Local MCP client    ── MCP via CLI + API key ────────────────────┤── LystBot API (REST/JSON)
+CLI / agents        ── Bearer API key ───────────────────────────┘
 ```
 
-The MCP server runs locally as `lystbot mcp` and calls the same REST API with your API key.
+Local stdio MCP runs as `lystbot mcp` and uses an API key. ChatGPT remote MCP uses OAuth access tokens. The app (1.0.8+) sends `Authorization: Bearer <app_key>` with `X-LystBot-Client: app`.
 
 ---
 

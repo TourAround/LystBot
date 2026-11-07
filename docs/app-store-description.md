@@ -12,7 +12,7 @@ generated: { by: "fable-5", at: "2026-08-27" }
 
 Deine KI plant dir das perfekte Abendessen für sechs Personen. Und dann? Tippst du die Zutaten von Hand in eine Einkaufsliste. Mit LystBot fällt das weg.
 
-LystBot ist eine Listen-App, in der dein KI-Agent nicht zuschaut, sondern mitarbeitet. Du gibst ihm einen API-Key, und ab da schreibt er direkt in deine Listen: Zutaten eintragen, Erledigtes abhaken, komplette Listen von Grund auf bauen. Kein Copy-Paste, kein "hier, füg das mal ein". Dein Agent erledigt es, dein Handy zeigt es. Sofort.
+LystBot ist eine Listen-App, in der dein KI-Agent nicht zuschaut, sondern mitarbeitet. Du verbindest deinen Agenten, und ab da schreibt er direkt in deine Listen: Zutaten eintragen, Erledigtes abhaken, komplette Listen von Grund auf bauen. Kein Copy-Paste, kein "hier, füg das mal ein". Dein Agent erledigt es, dein Handy zeigt es. Sofort.
 
 **So fühlt sich das an**
 
@@ -33,7 +33,7 @@ LystBot spricht die Sprachen, die Agenten verstehen: REST API, CLI und MCP. Dami
 
 **Loslegen in unter einer Minute**
 
-Kein Konto, keine E-Mail, kein Passwort. App öffnen, erste Liste anlegen, fertig. Für deinen Agenten erzeugst du einen API-Key und gibst ihn weiter.
+Kein Konto, keine E-Mail, kein Passwort. App öffnen, erste Liste anlegen, fertig. ChatGPT verbindest du per OAuth: Erzeuge einen sechsstelligen Kopplungscode unter **Einstellungen → ChatGPT**, wähle **Connect** in der LystBot-App in ChatGPT und gib den Code auf LystBots Autorisierungsseite ein, um den Zugriff zu erlauben. CLI, lokales MCP und REST verwenden einen API-Key.
 
 Deine KI kann denken. Mit LystBot erledigt sie die Dinge auch.
 
@@ -48,15 +48,22 @@ Your AI can plan a week of dinners in ten seconds. But can it put milk on your s
 
 Now it can.
 
-LystBot is a list app where AI agents are first-class participants, not a chat window you copy things out of. Give your agent an API key and it manages your lists directly: adds items, checks them off, builds an entire packing list while you're still picking dates. You tell it what you need. It's on your phone before you've locked the screen.
+LystBot is a list app where AI agents are first-class participants, not a chat window you copy things out of. Connect your agent and it manages your lists directly: adds items, checks them off, builds an entire packing list while you're still picking dates. You tell it what you need. It's on your phone before you've locked the screen.
 
 Tell Claude Code to stock the grocery list for the week. Ask ChatGPT for a camping checklist and watch it appear, item by item. Let OpenClaw tidy your to-dos overnight. Your agent works where it already lives: OpenClaw, Hermes Agent, Claude Code, ChatGPT, Codex, Grok Bot, Cursor, Devin Desktop, and anything else that speaks REST or MCP. The app simply shows what happened, live.
 
 **How your agent connects**
 
+- [LystBot app for ChatGPT](https://chatgpt.com/plugins/plugin_asdk_app_6ac6217aa5a8819193caf8804dd369ef) over remote OAuth MCP, without an API key
 - REST API for anything that can make an HTTP call
 - CLI for terminal agents like Claude Code and Codex
-- MCP server for quick setup in MCP-capable tools
+- Local MCP server for quick setup in MCP-capable tools
+
+Connect ChatGPT with a six-digit pairing code from **Settings → ChatGPT** in LystBot. Select **Connect** in ChatGPT, enter the code on LystBot's authorization page and approve access. CLI, local MCP and REST integrations use an API key.
+
+ChatGPT's seven remote tools can list lists, read a list, list reminders, create a list, add items, update an item and create a reminder. They do not include delete or sharing operations.
+
+OpenAI (ChatGPT) receives authorized list and reminder data, including accessible shared lists. Disconnect in **LystBot Settings → ChatGPT** or in ChatGPT to revoke access; earlier chats are not deleted. See the [Privacy Policy](https://lystbot.com/legal/privacy-en.html) and [Terms](https://lystbot.com/legal/terms-en.html).
 
 **Built for real life**
 
