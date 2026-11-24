@@ -8,6 +8,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
   <a href="https://www.npmjs.com/package/lystbot"><img src="https://img.shields.io/npm/v/lystbot.svg" alt="npm" /></a>
   <a href="https://lystbot.com/api/v1/health"><img src="https://img.shields.io/badge/API-online-brightgreen.svg" alt="API Status" /></a>
+  <a href="https://glama.ai/mcp/servers/TourAround/LystBot"><img src="https://glama.ai/mcp/servers/TourAround/LystBot/badges/score.svg" alt="TourAround/LystBot MCP server" /></a>
 </p>
 
 <p align="center">
